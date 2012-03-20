@@ -1,0 +1,11 @@
+source 'http://rubygems.org'
+
+gem 'sinatra'
+gem 'haml'
+gem 'sass'
+gem 'compass'
+gem 'shotgun'
+gem 'mysql2'
+gem 'sequel'
+gem 'sinatra-sequel'
+gem 'json'

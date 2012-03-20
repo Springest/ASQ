@@ -1,0 +1,17 @@
+!!!5
+
+%html
+  %head
+    %meta{ :charset => 'utf-8' }
+    %title Asq
+    %link{ :href => '/styles/screen.css', :media => 'screen', :rel => 'stylesheet' }
+    %link{ :href => '/scripts/codemirror/lib/codemirror.css', :media => 'screen', :rel => 'stylesheet' }
+
+  %body
+    = yield
+
+    %script{ :src => '/scripts/jquery.js'}
+    %script{ :src => '/scripts/autosuggest.js'}
+    %script{ :src => '/scripts/codemirror/lib/codemirror.js'}
+    %script{ :src => '/scripts/codemirror/mode/mysql/mysql.js'}
+    %script{ :src => '/scripts/asq.js'}

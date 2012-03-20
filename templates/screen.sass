@@ -1,0 +1,419 @@
+@font-face
+    font-family: icon
+    src: url('/fonts/fontawesome.eot')
+    src: url('/fonts/fontawesome.eot?#iefix') format('embedded-opentype'), url('/fonts/fontawesome.woff') format('woff'), url('/fonts/fontawesome.ttf') format('truetype'), url('/fonts/fontawesome.svgz#FontAwesomeRegular') format('svg'), url('/fonts/fontawesome.svg#FontAwesomeRegular') format('svg')
+    font-weight: normal
+    font-style: normal
+
+*
+    border: 0
+    list-style: none
+    margin: 0
+    padding: 0
+
+body
+    background: #FFF
+    color: #111
+    font: 62.5% 'Helvetica Neue', Helvetica, Arial, sans-serif
+    padding-top: 5.1em
+
+    &.loading header
+        background: #E8E8E8 url(/images/loading.gif) no-repeat 99.5% 50%
+
+
+.hide
+    display: none
+
+.icon::before,
+.sort::before
+    font-family: icon
+    margin-right: 0.25em
+
+.edit::before
+    content: "\f040"
+
+.add::before
+    content: "\f055"
+
+.list::before
+    content: "\f03a"
+
+.database::before
+    content: "\f01c"
+
+.sort::before
+    color: #777
+    content: "\f077"
+    font-size: 0.8em
+
+.sort-desc::before
+    content: "\f078"
+
+
+h1
+    font: bold 2.4em Monaco, 'Courier New', Courier, monospace
+    text-transform: uppercase
+
+p,
+ul,
+ol,
+td,
+th
+    font-size: 1.5em
+    line-height: 1.5em
+    margin-bottom: 1.5em
+    overflow: hidden
+
+    &:last-child
+        margin-bottom: 0
+
+a
+    color: #000
+
+    &:hover,
+    &:focus
+        color: #444
+
+header
+    background: #E8E8E8
+    border-bottom: 0.1em solid #999
+    color: #000
+    height: 3em
+    left: 0
+    padding: 1em
+    position: fixed
+    right: 0
+    top: 0
+
+    *
+        float: left
+
+    input
+        -webkit-appearance: none
+        border: 1px solid #999
+        border-radius: 2em
+        font-size: 1.6em
+        padding: 3px
+        margin: 0.25em 0 0 0.5em
+        width: 20em
+
+        &:focus
+            border: 2px solid #111
+            outline: none
+            padding: 2px
+
+        &.search-in-results
+            float: right
+            margin-right: 1.5em
+
+    a
+        background: #FFF
+        border-radius: 0.4em
+        color: #333
+        font-size: 1.6em
+        margin-left: 1em
+        padding: 0.5em
+        text-decoration: none
+
+        &:hover,
+        &:focus
+            background: #111
+            color: #FFF
+
+.message-dialog
+    background: rgba(0, 0, 0, 0.8)
+    border-radius: 2em
+    color: #FFF
+    font-size: 1.6em
+    font-weight: bold
+    left: 50%
+    line-height: 1.5em
+    margin-left: -10em
+    padding: 2em
+    position: fixed
+    text-align: center
+    top: 7em
+    width: 16em
+    z-index: 4
+
+section
+    background: #E8E8E8
+    border: 0.1em solid #111
+    border-radius: 0.4em
+    box-shadow: 0 0 3em #333
+    left: 50%
+    margin-left: -30.5em
+    padding: 0.4em
+    position: fixed
+    top: 2em
+    width: 60em
+    z-index: 3
+
+    > div
+        background: #FFF
+        padding: 0.75em
+
+    h1
+        font-size: 2em
+        margin-bottom: 0.2em
+
+    ul p,
+    ol p,
+    ul ul,
+    ul ol,
+    ol ul,
+    ol ol
+        font-size: 1em
+        margin-bottom: 0
+
+    label
+        display: block
+
+    input,
+    textarea,
+    .CodeMirror
+        border: 1px solid #777
+        border-radius: 4px
+        box-sizing: border-box
+        display: block
+        font-size: 1em
+        padding: 3px
+        width: 100%
+
+        &:focus
+            border-width: 2px
+            outline: none
+            padding: 2px
+
+    textarea
+        height: 6em
+        resize: vertical
+
+    .CodeMirror
+        font-size: 1.3em
+        // height: 9em
+
+    input[type="submit"]
+        background: #777 -webkit-linear-gradient(top, transparent, #555)
+        border-color: #555
+        color: #FFF
+        float: right
+        padding: 0.2em 1em
+        width: auto
+
+        &:hover,
+        &:focus
+            background-color: #555
+            border-width: 1px
+            padding: 0.2em 1em
+
+    .close
+        background: #111
+        -webkit-border-bottom-left-radius: 0.4em
+        -moz-border-radius-bottomleft: 0.4em
+        border-bottom-left-radius: 0.4em
+        color: #FFF
+        font-size: 1.4em
+        height: 1em
+        line-height: 1em
+        padding: 0.15em 0.15em 0.25em 0.25em
+        position: absolute
+        right: 0
+        text-align: center
+        text-decoration: none
+        top: 0
+        width: 1em
+
+    .actions
+        position: absolute
+        right: 2em
+        top: -1px
+
+        li
+            float: left
+            margin-left: 0.5em
+
+        a
+            background: #111
+            -webkit-border-bottom-right-radius: 0.4em
+            -webkit-border-bottom-left-radius: 0.4em
+            -moz-border-radius-bottomright: 0.4em
+            -moz-border-radius-bottomleft: 0.4em
+            border-bottom-right-radius: 0.4em
+            border-bottom-left-radius: 0.4em
+            color: #FFF
+            display: block
+            font-size: 0.85em
+            font-weight: bold
+            padding: 0.15em 0.75em
+            text-decoration: none
+
+            &:hover,
+            &:focus
+                background: #555
+                text-decoration: underline
+
+    .query-list
+        border: 1px solid #999
+        border-radius: 0.5em
+        height: 35em
+        overflow: auto
+
+        li
+            position: relative
+
+            &:nth-child(even) a[id]
+                background: #E8E8E8
+
+        &.editable a[id]
+            padding: 0.5em 5em 0.5em 1.5em
+
+        a
+            text-decoration: none
+
+        a[id]
+            color: #111
+            display: block
+            padding: 0.5em
+            -webkit-transition: padding 0.5s ease-in-out
+
+            &:hover
+                background: #DFDFDF !important
+
+            span
+                color: #777
+                font-size: 0.7em
+
+            strong
+                margin-right: 0.6em
+
+        .delete
+            color: #C00
+            font-family: icon
+            left: 0.25em
+            position: absolute
+            top: 0.65em
+
+            &:hover,
+            &:focus
+                color: #900
+
+        .delete-confirm
+            background: -webkit-linear-gradient(top, #C00, #900)
+            border: 1px solid #900
+            border-radius: 0.4em
+            color: #FFF
+            font-size: 0.8em
+            padding: 0.2em 0.4em
+            position: absolute
+            right: 0.25em
+            top: 0.35em
+
+            &:hover,
+            &:focus
+                background: #900
+
+#edit
+    margin-left: -40.5em
+    width: 80em
+
+#db
+    margin-left: -20.5em
+    width: 40em
+
+    select
+        box-sizing: border-box
+        font-size: 1.1em
+        padding: 0.5em
+        width: 100%
+
+table
+    border-spacing: 0
+
+    td,
+    th
+        border: 1px solid #DDD
+        border-width: 0 1px 1px 0
+        padding: 0.15em 0.5em
+        text-align: left
+
+    tr.even td
+        background-color: #EEE
+
+    a
+        text-decoration: none
+
+        &:hover,
+        &:focus
+            text-decoration: underline
+
+    p,
+    ul,
+    ol,
+    li,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6
+        font-size: 1em
+        font-weight: normal
+
+
+
+.dropdown
+    left: 0
+    position: absolute
+    top: 0
+    z-index: 113
+
+    div
+        background: #FFF
+        border: 1px solid #DDD
+        -webkit-border-bottom-right-radius: 4px
+        -webkit-border-bottom-left-radius: 4px
+        -moz-border-radius-bottomright: 4px
+        -moz-border-radius-bottomleft: 4px
+        border-bottom-right-radius: 4px
+        border-bottom-left-radius: 4px
+        -webkit-box-shadow: 0 1px 3px rgba(0,0,0, .2)
+        -moz-box-shadow: 0 1px 3px rgba(0,0,0, .2)
+        box-shadow: 0 1px 3px rgba(0,0,0, .2)
+    
+    h2
+        color: #070707
+        font-size: 1em
+        font-weight: bold
+        padding: 6px 7px 5px
+    
+    ul
+        padding: 0
+    
+    li
+        background: transparent
+        margin: 0
+        padding: 0
+    
+    a
+        display: block
+        outline: none
+        padding: 5px 7px 5px 18px
+    
+    
+        &:hover,
+        &:focus
+            background-color: #F1F1F1
+    
+    
+        &.continue-search
+            background: #DDD url(../images/search-continue-gradient.png) repeat-x
+            background-size: 100% 100%
+            color: #070707
+            font-weight: bold
+            padding: 5px 7px
+    
+    
+            &:hover,
+            &:focus
+                color: #059EE7
