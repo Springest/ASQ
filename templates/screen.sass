@@ -22,24 +22,24 @@ body
 
 
 .hide
-    display: none
+    display: none !important
 
 .icon::before,
 .sort::before
     font-family: icon
     margin-right: 0.25em
 
-.edit::before
-    content: "\f040"
+.icon.database::before
+    content: "\f01c"
 
-.add::before
+.icon.add::before
     content: "\f055"
 
-.list::before
-    content: "\f03a"
+.icon.edit::before
+    content: "\f040"
 
-.database::before
-    content: "\f01c"
+.icon.export::before
+    content: "\f045"
 
 .sort::before
     color: #777
@@ -67,6 +67,10 @@ th
     &:last-child
         margin-bottom: 0
 
+ul li
+    list-style: disc
+    margin-left: 1.5em
+
 a
     color: #000
 
@@ -78,15 +82,19 @@ header
     background: #E8E8E8
     border-bottom: 0.1em solid #999
     color: #000
+    font-size: 1em
     height: 3em
     left: 0
+    line-height: 1em
     padding: 1em
     position: fixed
     right: 0
     top: 0
 
-    *
-        float: left
+    > *
+        display: inline-block
+        line-height: 1em
+        vertical-align: middle
 
     input
         -webkit-appearance: none
@@ -98,7 +106,7 @@ header
         width: 20em
 
         &:focus
-            border: 2px solid #111
+            border: 2px solid #777
             outline: none
             padding: 2px
 
@@ -117,8 +125,87 @@ header
 
         &:hover,
         &:focus
-            background: #111
+            background: #666
             color: #FFF
+
+    .db,
+    .queries
+        position: relative
+
+        > a
+            line-height: 1em
+
+        ul
+            background: #666
+            border-radius: 5px
+            border-top-left-radius: 0
+            box-shadow: 0 0.5em 1em #888
+            color: #FFF
+            display: none
+            font-size: 1em
+            left: 1.6em
+            max-height: 40em
+            overflow: auto
+            padding: 0.5em
+            position: absolute
+            top: 2.45em
+            width: 30em
+
+            li
+                display: block
+                margin: 0
+                width: 100%
+
+            a
+                background: transparent
+                color: #FFF
+                display: block
+                margin: 0.15em 0
+                padding: 0.25em 0.5em
+
+                &:hover,
+                &:focus
+                    background: #FFF
+                    color: #111
+
+                span
+                    color: #AAA
+                    font-size: 0.7em
+                    line-height: 1.4285714286em
+
+    .db:hover > a
+        background: #666
+        border-bottom-left-radius: 0
+        border-bottom-right-radius: 0
+        color: #FFF
+
+    .db:hover ul
+        display: block
+
+    .queries ul
+        display: block
+        left: 0.7em
+        top: 3em
+        width: 50em
+
+        li
+            position: relative
+
+        a
+            margin-right: 2em
+
+            &.edit
+                background: transparent
+                color: #CCC
+                font-family: icon
+                margin: 0
+                position: absolute
+                right: 0
+                top: 2px
+
+                &:hover,
+                &:focus
+                    color: #FFF
 
 .message-dialog
     background: rgba(0, 0, 0, 0.8)
@@ -191,7 +278,6 @@ section
 
     .CodeMirror
         font-size: 1.3em
-        // height: 9em
 
     input[type="submit"]
         background: #777 -webkit-linear-gradient(top, transparent, #555)
@@ -209,8 +295,6 @@ section
 
     .close
         background: #111
-        -webkit-border-bottom-left-radius: 0.4em
-        -moz-border-radius-bottomleft: 0.4em
         border-bottom-left-radius: 0.4em
         color: #FFF
         font-size: 1.4em
@@ -224,108 +308,9 @@ section
         top: 0
         width: 1em
 
-    .actions
-        position: absolute
-        right: 2em
-        top: -1px
-
-        li
-            float: left
-            margin-left: 0.5em
-
-        a
-            background: #111
-            -webkit-border-bottom-right-radius: 0.4em
-            -webkit-border-bottom-left-radius: 0.4em
-            -moz-border-radius-bottomright: 0.4em
-            -moz-border-radius-bottomleft: 0.4em
-            border-bottom-right-radius: 0.4em
-            border-bottom-left-radius: 0.4em
-            color: #FFF
-            display: block
-            font-size: 0.85em
-            font-weight: bold
-            padding: 0.15em 0.75em
-            text-decoration: none
-
-            &:hover,
-            &:focus
-                background: #555
-                text-decoration: underline
-
-    .query-list
-        border: 1px solid #999
-        border-radius: 0.5em
-        height: 35em
-        overflow: auto
-
-        li
-            position: relative
-
-            &:nth-child(even) a[id]
-                background: #E8E8E8
-
-        &.editable a[id]
-            padding: 0.5em 5em 0.5em 1.5em
-
-        a
-            text-decoration: none
-
-        a[id]
-            color: #111
-            display: block
-            padding: 0.5em
-            -webkit-transition: padding 0.5s ease-in-out
-
-            &:hover
-                background: #DFDFDF !important
-
-            span
-                color: #777
-                font-size: 0.7em
-
-            strong
-                margin-right: 0.6em
-
-        .delete
-            color: #C00
-            font-family: icon
-            left: 0.25em
-            position: absolute
-            top: 0.65em
-
-            &:hover,
-            &:focus
-                color: #900
-
-        .delete-confirm
-            background: -webkit-linear-gradient(top, #C00, #900)
-            border: 1px solid #900
-            border-radius: 0.4em
-            color: #FFF
-            font-size: 0.8em
-            padding: 0.2em 0.4em
-            position: absolute
-            right: 0.25em
-            top: 0.35em
-
-            &:hover,
-            &:focus
-                background: #900
-
 #edit
     margin-left: -40.5em
     width: 80em
-
-#db
-    margin-left: -20.5em
-    width: 40em
-
-    select
-        box-sizing: border-box
-        font-size: 1.1em
-        padding: 0.5em
-        width: 100%
 
 table
     border-spacing: 0
@@ -359,61 +344,3 @@ table
     h6
         font-size: 1em
         font-weight: normal
-
-
-
-.dropdown
-    left: 0
-    position: absolute
-    top: 0
-    z-index: 113
-
-    div
-        background: #FFF
-        border: 1px solid #DDD
-        -webkit-border-bottom-right-radius: 4px
-        -webkit-border-bottom-left-radius: 4px
-        -moz-border-radius-bottomright: 4px
-        -moz-border-radius-bottomleft: 4px
-        border-bottom-right-radius: 4px
-        border-bottom-left-radius: 4px
-        -webkit-box-shadow: 0 1px 3px rgba(0,0,0, .2)
-        -moz-box-shadow: 0 1px 3px rgba(0,0,0, .2)
-        box-shadow: 0 1px 3px rgba(0,0,0, .2)
-    
-    h2
-        color: #070707
-        font-size: 1em
-        font-weight: bold
-        padding: 6px 7px 5px
-    
-    ul
-        padding: 0
-    
-    li
-        background: transparent
-        margin: 0
-        padding: 0
-    
-    a
-        display: block
-        outline: none
-        padding: 5px 7px 5px 18px
-    
-    
-        &:hover,
-        &:focus
-            background-color: #F1F1F1
-    
-    
-        &.continue-search
-            background: #DDD url(../images/search-continue-gradient.png) repeat-x
-            background-size: 100% 100%
-            color: #070707
-            font-weight: bold
-            padding: 5px 7px
-    
-    
-            &:hover,
-            &:focus
-                color: #059EE7

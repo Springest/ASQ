@@ -32,7 +32,7 @@ class QueryRow
             { 'success' => @id }
         else
             DB[:queries].where(:id => @id).update(:name => @name,:description => @description, :query => @query)
-            p @id
+            
             { 'success' => @id }
         end
     end

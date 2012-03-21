@@ -18,17 +18,13 @@ var Asq = {
     /* Calls all DOM generating and event binding functions. */
     init: function() {
         Asq.setBoxSections();
-        Asq.setListEdit();
+        Asq.setQueryList();
         Asq.setEditAjax();
-        Asq.setDbDropdown();
         Asq.setSyntaxHighlighting();
         Asq.getDbs();
 
-        $('.search-in-queries').autosuggest({
-            api: '/querylist/%s',
-            clickLinkCallback: Asq.setDropdownQuery
-        });
-        $('.search-in-results').bind('keyup change', Asq.searchInResults);
+        $('.search-in-queries');
+        $('.search-in-results').bind('keyup change click', Asq.searchInResults);
 
         window.addEventListener('popstate', function(e) {
             Asq.popstate(e);
@@ -86,109 +82,91 @@ var Asq = {
 
 
 
-    /* The list functions, editing, removing of queries et cetera. */
-    setListEdit: function() {
-        var listElm = $('#list'),
-                queryListElm = listElm.find('.query-list'),
-                editMode = false,
-                html = '<ul class="actions">' +
-                            '<li><a href="#" class="icon edit">Edit</a></li>' +
-                            '<li><a href="#" class="icon add">Add</a></li>' +
-                        '</ul>';
+    /* Makes query list visible on focus, and searchable on type. */
+    setQueryList: function() {
+        var inputElm = $('.search-in-queries'),
+            listElm = $('.query-list');
 
-        queryListElm.before(html);
+        inputElm.focus(showQueryList).blur(hideQueryList);
+        inputElm.bind('change keyup click', inlineSearch);
+        $(window).click(hideQueryList);
 
-        listElm.find('.edit').click(toggleEdit);
-        listElm.find('.add').click(add);
-
-        queryListElm.find('li').each(function(index, elm) {
+        listElm.find('li').each(function(index, elm) {
             elm = $(elm);
 
-            elm.prepend('<a href="#" class="delete hide" title="Delete">&#xF056;</a>');
-            elm.append('<a href="#" class="delete-confirm hide">Delete</a>');
+            elm.append('<a href="#" class="edit" title="Edit" data-id="' + elm.find('a').attr('data-id') + '">&#xF040;</a>');
         });
 
-        queryListElm.on('click', 'a', aClick);
+        listElm.on('click', '.edit', openEdit);
 
-        queryListElm.find('.delete,.delete-confirm').fadeOut(0);
-
-
-        function toggleEdit(e) {
-            e.preventDefault();
-
-            editMode = !editMode;
-
-            if (editMode) {
-                queryListElm.addClass('editable');
-                queryListElm.find('.delete').fadeIn(750);
-            }
-            else {
-                queryListElm.removeClass('editable');
-                queryListElm.find('.delete,.delete-confirm').fadeOut(750);
-            }
+        function showQueryList() {
+            listElm.removeClass('hide');
         }
 
-        function add(e) {
-            e.preventDefault();
+        function hideQueryList(e) {
+            if (e) {
+                var elm = $(e.target);
 
-            $('section').addClass('hide');
-            $('#edit').removeClass('hide');
-            Asq.setEditForm(false);
+                if (elm.closest('.queries').length) return;
+            }
+
+            listElm.addClass('hide');
         }
 
-        function aClick(e) {
+        function openEdit(e) {
             e.preventDefault();
 
-            var elm = $(this),
-                    id = parseInt(elm.closest('li').find('a:has(strong)').prop('id').substring(6), 10);
+            var id = parseInt($(this).attr('data-id'), 10);
 
-            if (editMode && elm.is('.delete')) {
-                queryListElm.find('.delete-confirm').fadeOut(750)
-                elm.closest('li').find('.delete-confirm').stop().fadeIn(750);
-            }
-            else if (editMode && elm.is('.delete-confirm')) {
-                $('body').addClass('loading');
-                $.ajax('/query/' + id, {
-                    type: 'DELETE',
-                    success: function(data) {
-                        $('body').removeClass('loading');
-                        if (data.success === false) {
-                            Asq.giveMessage('Something went wrong while deleting a query. Please try again.');
+            hideQueryList();
+
+            $('body').addClass('loading');
+            $.ajax('/query/' + id, {
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('body').removeClass('loading');
+                    Asq.setEditForm(data);
+                },
+                error: function() {
+                    $('body').removeClass('loading');
+                    Asq.giveMessage('Something went wrong while fetch info of the requested query. Please try again.');
+                }
+            });
+        }
+
+        function inlineSearch() {
+            var val = inputElm.val().toLowerCase(),
+                valSplit = val.split(' '),
+                toShow,
+                text;
+
+            listElm.find('li').each(function(index, liElm) {
+                liElm = $(liElm);
+
+                toShow = false;
+                text = liElm.text().toLowerCase();
+
+                if (val.length == 0) {
+                    toShow = true;
+                }
+                else {
+                    toShow = true
+                    for (var i = valSplit.length - 1; i > -1 && toShow; --i) {
+                        toShow = false;
+                        if (text.indexOf(valSplit[i]) != -1) {
+                            toShow = true;
                         }
-                        else {
-                            elm.closest('li').slideUp(500, function() {
-                                $(this).remove();
-                            });
-                            Asq.giveMessage('Query deleted.');
-                        }
-                    },
-                    error: function() {
-                        $('body').removeClass('loading');
-                        Asq.giveMessage('Something went wrong while deleting a query. Please try again.');
                     }
-                });
-            }
-            else if (editMode) {
-                $('body').addClass('loading');
-                $.ajax('/query/' + id, {
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        $('body').removeClass('loading');
-                        Asq.setEditForm(data);
-                    },
-                    error: function() {
-                        $('body').removeClass('loading');
-                        Asq.giveMessage('Something went wrong while fetch info of the requested query. Please try again.');
-                    }
-                });
-            }
-            else {
-                Asq.current.queryId = id;
-                Asq.current.sortColumn = null;
-                Asq.current.sortDir = 'asc';
-                Asq.request();
-            }
+                }
+
+                if (toShow) {
+                    liElm.removeClass('hide');
+                }
+                else {
+                    liElm.addClass('hide');
+                }
+            });
         }
     },
 
@@ -208,12 +186,12 @@ var Asq = {
                     query: ''
                 };
                 var titleText = 'Add query',
-                    submitButtonText = 'Add…';
+                    submitButtonText = 'Add';
                 idElm.val('false');
             }
             else {
                 var titleText = 'Edit query',
-                    submitButtonText = 'Edit…';
+                    submitButtonText = 'Edit';
                 idElm.val(options.id);
             }
 
@@ -283,16 +261,15 @@ var Asq = {
                         Asq.current.sortDir = 'asc';
 
                         var html = '<li>' +
-                                        '<a href="#" class="delete hide" title="Delete">&#xF056;</a>' +
-                                        '<a href="#" id="query-' + id + '">' +
+                                        '<a href="#" data-id="' + id + '">' +
                                             '<span>' + id + '</span>' +
                                             '<strong>' + data['edit-name'] + '</strong>' +
                                             '<small>' + data['edit-description'] + '</small>' +
                                         '</a>' +
-                                        '<a href="#" class="delete-confirm hide">Delete</a>' +
+                                        '<a href="#" class="edit" title="Edit" data-id="' + elm.find('a').attr('data-id') + '">&#xF040;</a>' +
                                     '</li>';
 
-                        $('.query-list ul').append(html);
+                        $('.queries ul').append(html);
 
                         Asq.request();
                     }
@@ -302,22 +279,6 @@ var Asq = {
                     Asq.giveMessage(editing ? 'Something went wrong editing the query. Please try again.': 'Something went wrong adding the query. Please try again.');
                 }
             });
-        }
-    },
-
-
-
-    /* The DB select save function. */
-    setDbDropdown: function() {
-        var elm = $('#db');
-
-        elm.find('#db-submit').click(selectDb);
-
-
-        function selectDb() {
-            var db = elm.find('#dblist').val();
-            Asq.current.db = db;
-            Asq.request();
         }
     },
 
@@ -334,8 +295,8 @@ var Asq = {
     getDbs: function() {
         var toSet = [];
 
-        $('#dblist option').each(function(index, option) {
-            toSet.push($(option).val());
+        $('.db ul a').each(function(index, db) {
+            toSet.push($(db).attr('data-db-name'));
         });
 
         Asq.dbs = toSet;
@@ -361,13 +322,14 @@ var Asq = {
                 db: Asq.current.db,
                 sortColumn: Asq.current.sortColumn,
                 sortDir: Asq.current.sortDir
-            }, 'Asq', url);
+            }, 'ASQ', url);
         }
 
         Asq.current.offsetRow = 0;
         Asq.current.requesting = 0;
 
         $('body').addClass('loading');
+        $('section').addClass('hide');
 
         $.ajax('/results', {
             dataType: 'json',
@@ -381,8 +343,7 @@ var Asq = {
             },
             success: function(data) {
                 $('body').removeClass('loading');
-                $('section:not(#db,#list)').addClass('hide');
-                $('header .edit.hide').removeClass('hide');
+                $('header .edit.hide,header .export.hide').removeClass('hide');
                 Asq.displayData(data.results);
 
                 Asq.current.name = data.query.name;
@@ -558,18 +519,6 @@ var Asq = {
 
 
 
-    /* Called when a user clicks on a result in the query autosuggest. */
-    setDropdownQuery: function(elm) {
-        Asq.current.queryId = parseInt($(elm).attr('data-id'), 10);
-        Asq.current.sortColumn = null;
-        Asq.current.sortDir = 'asc';
-        Asq.request();
-
-        return false;
-    },
-
-
-
     /* Called when a user types in the inline search bar, to filter results from the table. */
     searchInResults: function() {
         if (Asq.searchTimer) {
@@ -600,7 +549,7 @@ var Asq = {
             text = trElm.text().toLowerCase();
 
             if (val.length == 0) {
-                toShow = true
+                toShow = true;
             }
             else {
                 toShow = true

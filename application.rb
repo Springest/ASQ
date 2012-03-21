@@ -58,12 +58,6 @@ class Application < Sinatra::Base
     end
 
 
-    get '/querylist/:search' do
-        rows = QueryTable.find(params[:search]);
-        rows.to_json
-    end
-
-
     get '/styles/screen.css' do
         content_type 'text/css', :charset => 'utf-8'
         sass :screen, :style => :expanded
