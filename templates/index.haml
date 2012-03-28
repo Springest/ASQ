@@ -1,32 +1,29 @@
 %header
-    %h1 Asq
+    %h1 ASQ
     
-    %a.open.icon.database{ :href => '#', 'data-ref' => 'db' } DB
-    %a.open.icon.list{ :href => '#', 'data-ref' => 'list' } List
+    .db
+        %a.icon.database{ :href => '#', 'data-ref' => 'db' } DB
+        %ul
+            - @dbs.each do |dba|
+                %li
+                    %a{ :href => '/' + dba[:Database], 'data-db-name' => dba[:Database] }= dba[:Database]
 
-    %input.search-in-queries{ :type => 'search', :placeholder => sprintf('Search %d queries', @queries.count) }
+    .queries
+        %input.search-in-queries{ :type => 'search', :placeholder => sprintf('Search %d queries', @queries.count) }
+
+        - if @queries.count != 0
+            %ul.query-list.hide
+                - @queries.each do |query|
+                    %li
+                        %a{ :href => '#', 'data-id' => query[:id] }
+                            %span= query[:id]
+                            %strong= query[:name]
 
     %a.open.icon.add{ :href => '#', 'data-ref' => 'edit' } Add
     %a.open.icon.edit.hide{ :href => '#', 'data-ref' => 'edit' } Edit
+    %a.open.icon.export.hide{ :href => '#', 'data-ref' => 'export' } Export
 
     %input.search-in-results{ :type => 'search', :placeholder => 'Search in results' }
-
-%section#list.hide
-    %div
-        %h1 All saved queries
-        - if @queries.count != 0
-            .query-list
-                %ul
-                    - @queries.each do |query|
-                        %li
-                            %a{ :href => '#', :id => sprintf('query-%d', query[:id]) }
-                                %span= query[:id]
-                                %strong= query[:name]
-                                %small= query[:description]
-        - else
-            %p
-                No queries yet.
-                %a.open{ :href => '#', 'data-ref' => 'edit' } Add one?
 
 %section#edit.hide
     %div
@@ -36,22 +33,20 @@
                 %label{ :for => 'edit-name' } Name
                 %input#edit-name{ :name => 'edit-name' }
             %p
-                %label{ :for => 'edit-description' } Description
-                %textarea#edit-description{ :name => 'edit-description' }
-            %p
                 %label{ :for => 'edit-query' } Query
                 %textarea#edit-query{ :name => 'edit-query' }
             %p
                 %input{ :type => 'hidden', :id => 'edit-id', :name => 'edit-id', :value => 'false' }
-                %input{ :type => 'submit', :id => 'edit-submit', :value => 'Add…' }
+                %a.delete-query.hide.icon.delete{ :href => '#' } Delete query
+                %input{ :type => 'submit', :id => 'edit-submit', :value => 'Save' }
 
-%section#db.hide
+%section#export.hide
     %div
-        %h1 Select a database
-        %p
-            %select#dblist
-                - @dbs.each do |dba|
-                    %option{ :value => dba[:Database] }= dba[:Database]
-
-        %p
-            %input{ :type => 'submit', :id => 'db-submit', :value => 'Choose…' }
+        %h1 Export results
+        %ul
+            %li
+                %a.csv{ :href => '#' } .csv (Comma-separated values)
+            %li
+                %em
+                    Google Docs
+                    %strong Coming soon!
