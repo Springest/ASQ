@@ -10,9 +10,8 @@ class QueryRow
                 @id = nil
             end
 
-            if (params.has_key?('edit-name') && params.has_key?('edit-description') && params.has_key?('edit-query') && params['edit-name'].length != 0 && params['edit-description'].length != 0 && params['edit-query'].length != 0)
+            if (params.has_key?('edit-name') && params.has_key?('edit-query') && params['edit-name'].length != 0 && params['edit-query'].length != 0)
                 @name = params['edit-name']
-                @description = params['edit-description']
                 @query = params['edit-query']
                 @error = false
             else
@@ -28,11 +27,11 @@ class QueryRow
         if (@error)
             { 'success' => false }
         elsif (@id == nil)
-            @id = DB[:queries].insert(:name => @name, :description => @description, :query => @query)
+            @id = DB[:queries].insert(:name => @name, :query => @query)
             { 'success' => @id }
         else
-            DB[:queries].where(:id => @id).update(:name => @name,:description => @description, :query => @query)
-            p @id
+            DB[:queries].where(:id => @id).update(:name => @name, :query => @query)
+            
             { 'success' => @id }
         end
     end
@@ -60,7 +59,6 @@ class QueryRow
             {
                 'id' => @id,
                 'name' => result[:name],
-                'description' => result[:description],
                 'query' => result[:query]
             }
         else
@@ -69,22 +67,21 @@ class QueryRow
     end
 
 
-    def results(params)
+    def results(params, limit = 100)
         result = DB[:queries].where(:id => @id, :active => 'true').first
 
         if (result)
             query = {
                 'id' => @id,
                 'name' => result[:name],
-                'description' => result[:description],
                 'query' => result[:query]
             }
 
             seconddb = Sequel.connect(
                 :adapter => 'mysql2',
-                :host => 'localhost',
-                :user => 'root',
-                :password => 'root',
+                :host => Config['db']['host'],
+                :user => Config['db']['user'],
+                :password => Config['db']['pass'],
                 :database => params[:db]
             )
 
@@ -94,19 +91,19 @@ class QueryRow
 
             query['totalRows'] = results.count
 
-            if (params[:sortColumn] != 'null')
-                if (params[:sortDir] == 'desc')
-                    results = results.limit(100, params[:offset].to_i * 100).reverse_order(params[:sortColumn].to_sym)
+            if !params[:sortColumn].nil? && params[:sortColumn] != 'null'
+                if params[:sortDir] == 'desc'
+                    results = results.limit(limit, params[:offset].to_i * limit).reverse_order(params[:sortColumn].to_sym)
                 else
-                    results = results.limit(100, params[:offset].to_i * 100).order(params[:sortColumn].to_sym)
+                    results = results.limit(limit, params[:offset].to_i * limit).order(params[:sortColumn].to_sym)
                 end
             else
-                results = results.limit(100, params[:offset].to_i * 100)
+                results = results.limit(limit, params[:offset].to_i * limit)
             end
 
-            results.each{ |results|
+            results.each do |results|
                 toReturn.push(results)
-            }
+            end
 
             { :query => query, :results => toReturn }
         else
