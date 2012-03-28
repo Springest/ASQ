@@ -4,4 +4,4 @@ CREATE TABLE `queries` (
   `query` text NOT NULL,
   `active` enum('true','false') NOT NULL DEFAULT 'true',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;

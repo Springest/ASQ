@@ -475,8 +475,6 @@ var Asq = {
         Asq.current.offsetRow = 0;
         Asq.current.requesting = 0;
 
-        Asq.setLinks();
-
         $('body').addClass('loading');
         $('section').addClass('hide');
 
@@ -575,7 +573,7 @@ var Asq = {
             elm.attr('href', '/' + Asq.current.db + '/' + elm.attr('data-id'));
         });
 
-        $('table thead a').each(function(index, elm) {
+        Asq.tableHead.find('a').each(function(index, elm) {
             elm = $(elm);
 
             var column = elm.attr('data-column');
