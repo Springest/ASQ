@@ -1,0 +1,8 @@
+db:
+  user: 'root'
+  pass: 'root'
+  host: 'localhost'
+  name: 'asq_queries'
+login:
+  user: 'root'
+  pass: 'default'
