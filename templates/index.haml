@@ -18,7 +18,6 @@
                         %a{ :href => '#', 'data-id' => query[:id] }
                             %span= query[:id]
                             %strong= query[:name]
-                            %small= query[:description]
 
     %a.open.icon.add{ :href => '#', 'data-ref' => 'edit' } Add
     %a.open.icon.edit.hide{ :href => '#', 'data-ref' => 'edit' } Edit
@@ -34,20 +33,20 @@
                 %label{ :for => 'edit-name' } Name
                 %input#edit-name{ :name => 'edit-name' }
             %p
-                %label{ :for => 'edit-description' } Description
-                %textarea#edit-description{ :name => 'edit-description' }
-            %p
                 %label{ :for => 'edit-query' } Query
                 %textarea#edit-query{ :name => 'edit-query' }
             %p
                 %input{ :type => 'hidden', :id => 'edit-id', :name => 'edit-id', :value => 'false' }
-                %input{ :type => 'submit', :id => 'edit-submit', :value => 'Add' }
+                %a.delete-query.hide.icon.delete{ :href => '#' } Delete query
+                %input{ :type => 'submit', :id => 'edit-submit', :value => 'Save' }
 
 %section#export.hide
     %div
         %h1 Export results
         %ul
             %li
-                %a.csv{ :href => '#' } .csv
+                %a.csv{ :href => '#' } .csv (Comma-separated values)
             %li
-                %a.gdocs{ :href => '#' } Google Docs
+                %em
+                    Google Docs
+                    %strong Coming soon!
