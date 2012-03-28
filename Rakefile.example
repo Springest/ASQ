@@ -1,0 +1,80 @@
+require 'rubygems'
+require 'net/ssh'
+
+HOST = 'YOUR_SSH_HOST'
+USER = 'YOUR_SSH_USER'
+DIR  = '/PATH/TO/WEBROOT'
+PORT = '3005'
+
+task :deploy => ['deploy:pull', 'deploy:push', 'deploy:deploy', 'deploy:restart', 'deploy:tag']
+
+namespace :deploy do
+  task :precompile => [:precompile_assets, :pull, :push, :deploy, :restart, :tag]
+  task :rollback => [:push_previous, :precompile_assets, :push, :deploy, :restart, :tag]
+  
+  task :pull do
+    puts "\e[33mPulling remote changes from GitHub ...\e[0m"
+    puts `git pull origin master`
+  end
+
+  task :push do
+    puts "\e[33mPushing to GitHub ...\e[0m"
+    puts `git push origin master`
+  end
+
+  task :deploy do
+    puts "\e[33mDeploying ...\e[0m"
+    Net::SSH.start( HOST, USER ) do | ssh |
+      puts ssh.exec!('source .bash_profile && cd ' + DIR + ' && git pull && bundle')
+    end
+  end
+
+  task :restart do
+    puts "\e[33mRestarting app servers ...\e[0m"
+    Net::SSH.start( HOST, USER ) do | ssh |
+      puts ssh.exec!('source .bash_profile && cd ' + DIR + ' && thin stop -p ' + PORT + ' --servers 3 && thin start -p ' + PORT + ' --servers 3')
+    end
+  end
+
+  task :tag do
+    release_name = "release-#{Time.now.utc.strftime("%Y%m%d%H%M%S")}"
+    puts "\e[32mTagging release as '#{release_name}'\e[0m"
+    puts `git tag -a #{release_name} -m 'Tagged release'`
+    puts `git push --tags`
+  end
+  
+  task :push_previous do
+    releases = `git tag`.split("\n").select { |t| t[0..7] == 'release-' }.sort
+    current_release = releases.last
+    previous_release = releases[-2] if releases.length >= 2
+    if previous_release
+      puts "\e[33mRolling back to '#{previous_release}' ...\e[0m"
+
+      puts "\e[36mChecking out '#{previous_release}' in a new branch on local git repo ...\e[0m"
+      puts `git checkout #{previous_release}`
+      puts `git checkout -b #{previous_release}`
+
+      puts "\e[36mRemoving tagged version '#{previous_release}' (now transformed in branch) ...\e[0m"
+      puts `git tag -d #{previous_release}`
+      puts `git push origin :refs/tags/#{previous_release}`
+
+      puts "\e[36mPushing '#{previous_release}' to master ...\e[0m"
+      puts `git push origin +#{previous_release}:master --force`
+
+      puts "\e[36mDeleting rollbacked release '#{current_release}' ...\e[0m"
+      puts `git tag -d #{current_release}`
+      puts `git push origin :refs/tags/#{current_release}`
+
+      puts "\e[36mRetagging release '#{previous_release}' in case to repeat this process (other rollbacks)...\e[0m"
+      puts `git tag -a #{previous_release} -m 'Tagged release'`
+      puts `git push --tags`
+
+      puts "\e[36mTurning local repo checked out on develop ...\e[0m"
+      puts `git checkout develop`
+      puts "\e[32mAll done!\e[0m"
+    else
+      puts "\e[31mNo release tags found - can't roll back!\e[0m"
+      puts releases
+    end
+  end
+end
