@@ -22,12 +22,6 @@ class Application < Sinatra::Base
         set :environment, :development
     end
 
-
-    use Rack::Auth::Basic, 'Login to use ASQ.' do |username, password|
-        [username, password] == [Config['login']['user'], Config['login']['pass']]
-    end
-
-
     post '/add' do
         insertedRow = QueryRow.new(params)
         returnValue = insertedRow.save
