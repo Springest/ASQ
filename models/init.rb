@@ -8,14 +8,4 @@ DB = Sequel.connect(
           :database => Config['db']['name']
       )
 
-listdbs = DB['SHOW DATABASES']
-notWantedDbs = ['information_schema', 'mysql']
-wantedDbs = []
-
-listdbs.each do |db|
-    unless notWantedDbs.include?db[:Database]
-        wantedDbs.push db
-    end
-end
-
-ListDBs = wantedDbs
+ListDBs = DB['SHOW DATABASES'].to_a.delete_if{ |db| db[:Database].match(/_www/).nil? }
