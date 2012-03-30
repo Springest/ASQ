@@ -30,6 +30,23 @@ body
     &.loading header
         background: #E8E8E8 url(/images/loading.gif) no-repeat 99.5% 50%
 
+    &.loading-query::after
+        background: rgba(0, 0, 0, 0.8)
+        border-radius: 2em
+        color: #FFF
+        content: 'Loading\2026'
+        font-size: 1.6em
+        font-weight: bold
+        left: 50%
+        line-height: 1.5em
+        margin-left: -10em
+        padding: 2em
+        position: fixed
+        text-align: center
+        top: 7em
+        width: 16em
+        z-index: 1000
+
     &.resizing
         cursor: col-resize
         -webkit-touch-callout: none
@@ -353,8 +370,10 @@ section
         width: 1em
 
 #edit
-    margin-left: -40.5em
-    width: 80em
+    left: 3em
+    margin-left: 0
+    right: 3em
+    width: auto
 
     .delete-query
         text-decoration: none

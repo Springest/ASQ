@@ -1,7 +1,7 @@
 var Asq = {
     searchTimer: null,
     current: {
-        db: 'mysql',
+        db: 'eh_nl_www',
         queryId: null,
         sortColumn: null,
         sortDir: 'asc',
@@ -104,7 +104,8 @@ var Asq = {
                         Asq.giveMessage('Something went wrong while deleting a query. Please try again.');
                     }
                     else {
-                        $('.query-list a[data-id="' + id + '"]').parent().remove();
+                        $('.query-list a[data-id="' + id + '"]:first').parent().remove();
+                        $('section').addClass('hide');
                         Asq.giveMessage('Query deleted.');
                     }
                 },
@@ -397,15 +398,17 @@ var Asq = {
                         Asq.current.sortColumn = null;
                         Asq.current.sortDir = 'asc';
 
-                        var html = '<li>' +
-                                        '<a href="#" data-id="' + id + '">' +
-                                            '<span>' + id + '</span>' +
-                                            '<strong>' + data['edit-name'] + '</strong>' +
-                                        '</a>' +
-                                        '<a href="#" class="edit" title="Edit" data-id="' + elm.find('a').attr('data-id') + '">&#xF040;</a>' +
-                                    '</li>';
+                        if (!editing) {
+                            var html = '<li>' +
+                                            '<a href="#" data-id="' + id + '">' +
+                                                '<span>' + id + '</span>' +
+                                                '<strong>' + data['edit-name'] + '</strong>' +
+                                            '</a>' +
+                                            '<a href="#" class="edit" title="Edit" data-id="' + elm.find('a').attr('data-id') + '">&#xF040;</a>' +
+                                        '</li>';
 
-                        $('.queries ul').append(html);
+                            $('.queries ul').append(html);
+                        }
 
                         Asq.request();
                     }
@@ -475,7 +478,7 @@ var Asq = {
         Asq.current.offsetRow = 0;
         Asq.current.requesting = 0;
 
-        $('body').addClass('loading');
+        $('body').addClass('loading loading-query');
         $('section').addClass('hide');
 
         $.ajax('/results', {
@@ -489,7 +492,7 @@ var Asq = {
                 offset: 0
             },
             success: function(data) {
-                $('body').removeClass('loading');
+                $('body').removeClass('loading loading-query');
                 $('header .edit.hide,header .export.hide').removeClass('hide');
 
                 Asq.current.totalRows = data.query.totalRows;
@@ -501,11 +504,14 @@ var Asq = {
 
                 Asq.setLinks();
 
-                Asq.inlineFilter(true);
+                Asq.searchInResults(true);
             },
-            error: function(data) {
-                $('body').removeClass('loading');
-                Asq.giveMessage('Something went wrong fetching that query. Please try again.');
+            error: function(xhr) {
+                $('body').removeClass('loading loading-query');
+
+                var errorMessage = xhr.responseText.split("\n")[0];
+
+                Asq.giveMessage(errorMessage, 10000);
             }
         });
     },
@@ -673,7 +679,7 @@ var Asq = {
 
             Asq.current.requesting = Asq.current.offsetRow + 1;
 
-            $('body').addClass('loading');
+            $('body').addClass('loading loading-query');
 
             $.ajax('/results', {
                 dataType: 'json',
@@ -686,17 +692,17 @@ var Asq = {
                     offset: Asq.current.requesting
                 },
                 success: function(data) {
-                    $('body').removeClass('loading');
+                    $('body').removeClass('loading loading-query');
                     Asq.current.offsetRow = Asq.current.requesting;
                     Asq.displayData(data.results, true);
-                    Asq.inlineFilter(true);
+                    Asq.searchInResults(true);
 
                     if (typeof e == 'boolean' && bodyHeight < windowHeight && ((Asq.current.offsetRow + 1) * 100) < Asq.current.totalRows) {
                         Asq.infiniteScroll(true);
                     }
                 },
                 error: function(data) {
-                    $('body').removeClass('loading');
+                    $('body').removeClass('loading loading-query');
                     Asq.giveMessage('Something went wrong fetching that query. Please try again.');
                     Asq.current.requesting = Asq.current.offsetRow;
                 }
@@ -707,7 +713,7 @@ var Asq = {
 
 
     /* Displays a simple warning / success message to the user. */
-    giveMessage: function(text) {
+    giveMessage: function(text, duration) {
         if (!Asq.messageDialog) {
             Asq.messageDialog = $('<div class="message-dialog hide"></div>');
             Asq.messageDialog.appendTo('body');
@@ -718,19 +724,25 @@ var Asq = {
             Asq.messageDialog.fadeOut(500, function() {
                 Asq.messageDialog.addClass('hide');
             })
-        }, 2000);
+        }, typeof duration == 'undefined' ? 2500 : duration);
     },
 
 
 
     /* Called when a user types in the inline search bar, to filter results from the table. */
-    searchInResults: function() {
+    searchInResults: function(noInfinite) {
         if (Asq.searchTimer) {
             clearTimeout(Asq.searchTimer);
             Asq.searchTimer = null;
         }
 
-        Asq.searchTimer = setTimeout(Asq.inlineFilter, 250);
+        if (typeof noInfinite == 'undefined' || noInfinite != true) {
+            Asq.searchTimer = setTimeout(Asq.inlineFilter, 1000);
+        }
+        else {
+            Asq.searchTimer = null;
+            Asq.inlineFilter(true);
+        }
     },
 
 
@@ -745,7 +757,17 @@ var Asq = {
             trElms = Asq.table.find('tbody tr'),
             toShow,
             text,
-            totalShown = 0;
+            totalShown = 0,
+            isRegex = /\/(.+)\//.test(val);
+
+        if (isRegex) {
+            try {
+                var toTestFor = new RegExp(val.substring(1, val.length - 1), 'gi');
+            }
+            catch (e) {
+                isRegex = false;
+            }
+        }
 
         trElms.each(function(index, trElm) {
             trElm = $(trElm);
@@ -755,6 +777,9 @@ var Asq = {
 
             if (val.length == 0) {
                 toShow = true;
+            }
+            else if (isRegex) {
+                toShow = !!toTestFor.test(text);
             }
             else {
                 toShow = true
