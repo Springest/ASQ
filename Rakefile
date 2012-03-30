@@ -1,17 +1,17 @@
 require 'rubygems'
 require 'net/ssh'
 
-HOST = 'YOUR_SSH_HOST'
-USER = 'YOUR_SSH_USER'
-DIR  = '/PATH/TO/WEBROOT'
-PORT = '3005'
+HOST = 'springest.biz'
+USER = 'webdev'
+DIR  = '/var/www/asq.springest.biz'
+PORT = '3020'
 
 task :deploy => ['deploy:pull', 'deploy:push', 'deploy:deploy', 'deploy:restart', 'deploy:tag']
 
 namespace :deploy do
   task :precompile => [:precompile_assets, :pull, :push, :deploy, :restart, :tag]
   task :rollback => [:push_previous, :precompile_assets, :push, :deploy, :restart, :tag]
-  
+
   task :pull do
     puts "\e[33mPulling remote changes from GitHub ...\e[0m"
     puts `git pull origin master`
