@@ -1,7 +1,7 @@
 ASQ: Awesome Super Queries
 ==========================
 
-Or: *AS*k with a *Q*uery.
+Or: **AS**k with a **Q**uery.
 
 Install
 -------
