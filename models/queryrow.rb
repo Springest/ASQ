@@ -82,12 +82,15 @@ class QueryRow
                 :host => Config['db']['host'],
                 :user => Config['db']['user'],
                 :password => Config['db']['pass'],
-                :database => params[:db]
+                :database => params[:db],
+                :timeout => 60
             )
 
             toReturn = []
 
             results = seconddb[result[:query]]
+
+            seconddb.disconnect
 
             query['totalRows'] = results.count
 
