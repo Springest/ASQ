@@ -90,8 +90,6 @@ class QueryRow
 
             results = seconddb[result[:query]]
 
-            seconddb.disconnect
-
             query['totalRows'] = results.count
 
             if !params[:sortColumn].nil? && params[:sortColumn] != 'null'
@@ -107,6 +105,8 @@ class QueryRow
             results.each do |results|
                 toReturn.push(results)
             end
+
+            seconddb.disconnect
 
             { :query => query, :results => toReturn }
         else

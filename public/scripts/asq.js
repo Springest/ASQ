@@ -204,7 +204,7 @@ var Asq = {
                         }
                     }
                     else {
-                        toFocus = listElm.find('a:first');
+                        toFocus = listElm.find('li:not(.hide):first a:first');
                     }
                     break;
 
@@ -217,7 +217,7 @@ var Asq = {
                         }
                     }
                     else {
-                        toFocus = listElm.find('li:last a:first');
+                        toFocus = listElm.find('li:not(.hide):last a:first');
                     }
                     break;
 
