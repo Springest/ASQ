@@ -103,9 +103,4 @@ class Application < Sinatra::Base
             csv_string
         end
     end
-
-
-    after do
-        DB.disconnect
-    end
 end

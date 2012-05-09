@@ -106,8 +106,6 @@ class QueryRow
                 toReturn.push(results)
             end
 
-            seconddb.disconnect
-
             { :query => query, :results => toReturn }
         else
             { 'success' => false }
