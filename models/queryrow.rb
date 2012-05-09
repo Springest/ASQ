@@ -24,9 +24,10 @@ class QueryRow
 
 
     def save
+        @query = HTMLEntities.new.encode(@query)
         if (@error)
             { 'success' => false }
-        elsif (@id == nil)
+        elsif (@id.nil?)
             @id = DB[:queries].insert(:name => @name, :query => @query)
             { 'success' => @id }
         else
@@ -56,6 +57,7 @@ class QueryRow
         result = DB[:queries].where(:id => @id, :active => 'true').first
 
         if (result)
+            result[:query] = HTMLEntities.new.decode(result[:query])
             {
                 'id' => @id,
                 'name' => result[:name],
@@ -71,6 +73,7 @@ class QueryRow
         result = DB[:queries].where(:id => @id, :active => 'true').first
 
         if (result)
+            result[:query] = HTMLEntities.new.decode(result[:query])
             query = {
                 'id' => @id,
                 'name' => result[:name],

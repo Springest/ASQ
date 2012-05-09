@@ -8,6 +8,7 @@ require './models/querytable'
 require 'json'
 require 'csv'
 require 'yaml'
+require 'htmlentities'
 
 
 class Application < Sinatra::Base
