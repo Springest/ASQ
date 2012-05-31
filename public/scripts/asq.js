@@ -804,7 +804,7 @@ var Asq = {
             count = 0;
 
         $.each(results, function(index, row) {
-            rowHtml = $('<tr></tr>');
+            rowHtml = $('<tr>');
             count = 0;
             $.each(row, function(header, data) {
                 if (index == 0 && typeof append == 'undefined') {
