@@ -6,7 +6,8 @@ DB = Sequel.connect(
         :user => Config['db']['user'],
         :password => Config['db']['pass'],
         :database => Config['db']['name'],
-        :timeout => 60
+        :timeout => 30,
+        :reconnect => true
     )
 
 ListDBs = DB['SHOW DATABASES'].to_a.delete_if{ |db| db[:Database].match(/_www/).nil? }

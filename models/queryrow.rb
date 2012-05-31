@@ -105,7 +105,8 @@ class QueryRow
                 :user => Config['db']['user'],
                 :password => Config['db']['pass'],
                 :database => params[:db],
-                :timeout => 60
+                :timeout => 30,
+                :reconnect => true
             )
 
             toReturn = []
