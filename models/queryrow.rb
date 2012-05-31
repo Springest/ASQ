@@ -72,7 +72,7 @@ class QueryRow
     def results(params, limit = 100)
         result = DB[:queries].where(:id => @id, :active => 'true').first
 
-        pattern = /(\[(DATE|INT|FLOAT|STRING):(.+?);?(year|month|day)?\])/
+        pattern = /(\[(DATE|INT|FLOAT|STRING):(.+?)(;.+?)?\])/
 
         if (result)
             result[:query] = HTMLEntities.new.decode(result[:query])
@@ -89,7 +89,13 @@ class QueryRow
             else
                 queryArgs.each do |arg|
                     if params['arg-' + arg[2]].nil?
-                        return { :query => query, :args => queryArgs }
+                        default = QueryRow.getArgParam(arg[3], 'default')
+
+                        if default.nil?
+                            return { :query => query, :args => queryArgs }
+                        else
+                            params['arg-' + arg[2]] = default
+                        end
                     end
                 end
 
@@ -141,5 +147,12 @@ class QueryRow
         else
             { 'success' => false }
         end
+    end
+
+
+    def self.getArgParam(haystack, needle)
+        result = haystack.match('(^|,|;)' + needle + '=(.+?)(,|$)') unless haystack.nil?
+        result = result[2] unless result.nil?
+        result
     end
 end

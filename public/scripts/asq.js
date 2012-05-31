@@ -139,6 +139,7 @@ var Asq = {
             Asq.current.db = $(this).addClass('current').attr('data-db-name');
             Asq.current.sortColumn = null;
             Asq.current.sortDir = 'asc';
+            Asq.current.args = {};
 
 
             Asq.request();
@@ -250,9 +251,15 @@ var Asq = {
 
             listElm.find('.current').removeClass('current');
 
-            Asq.current.queryId = parseInt($(this).addClass('current').attr('data-id'), 10);
+            var elm = $(this).addClass('current');
+
+            Asq.current.queryId = parseInt(elm.attr('data-id'), 10);
             Asq.current.sortColumn = null;
             Asq.current.sortDir = 'asc';
+            Asq.current.args = {};
+
+            $('.queries input').attr('placeholder', elm.find('strong').text());
+
             Asq.request();
         }
 
@@ -445,7 +452,7 @@ var Asq = {
             var queryStringStarted = false;
 
             $.each(Asq.current.args, function(argkey, argval) {
-                url += (queryStringStarted ? '&' : '?') + argkey + '=' + encodeURIComponent(argval);
+                url += (queryStringStarted ? '&' : '?') + encodeURIComponent(argkey) + '=' + encodeURIComponent(argval);
                 queryStringStarted = true;
             });
 
@@ -472,8 +479,10 @@ var Asq = {
             if (arg[1] == 'DATE') {
                 inputClass = 'date-pick';
 
-                if (arg[3]) {
-                    info = arg[3];
+                var dateType = Asq.getArgParam(arg[3], 'type');
+
+                if (dateType) {
+                    info = dateType;
                 }
                 else {
                     info = 'date';
@@ -484,12 +493,14 @@ var Asq = {
                 info = arg[1].toLowerCase();
             }
 
+            var value = Asq.getArgParam(arg[3], 'default') || '';
+
             html += '<li>' +
                         '<label for="arg-' + arg[2] + '">' +
                             arg[2] +
                             ' <small>(' + info + ')</small>' +
                         '</label>' +
-                        '<input id="arg-' + arg[2] + '"' + (inputClass ? ' class="' + inputClass + '"' : '') + '>' +
+                        '<input id="arg-' + arg[2] + '"' + (inputClass ? ' class="' + inputClass + '"' : '') + ' value="' + value + '">' +
                     '</li>';
         });
 
@@ -499,6 +510,7 @@ var Asq = {
         Date.format = 'yyyy-mm-dd';
 
         argsElm.find('.date-pick').datePicker({
+            clickInput: true,
             startDate: '1996-01-01'
         });
 
@@ -541,8 +553,11 @@ var Asq = {
             switch (arg[1].toLowerCase()) {
                 case 'date' :
                     if (arg[3]) {
-                        if (arg[3] == 'year') val = val.substring(0, 4);
-                        if (arg[3] == 'month') val = val.substring(0, 7);
+                        var type = Asq.getArgParam(arg[3], 'type'),
+                            compact = Asq.getArgParam(arg[3], 'compact') == 'true';
+
+                        if (type == 'year') val = val.substring(0, 4) + (compact ? '' : '-01-01');
+                        if (type == 'month') val = val.substring(0, 7) + (compact ? '' : '-01');
                     }
                     break;
 
@@ -564,6 +579,22 @@ var Asq = {
 
 
 
+    getArgParam: function(haystack, needle) {
+        if (!haystack) {
+            return false;
+        }
+
+        var results = (new RegExp('(^|,|;)' + needle + '=(.+?)(,|$)', 'i')).exec(haystack);
+
+        if (results && results[2]) {
+            return results[2];
+        }
+
+        return false;
+    },
+
+
+
     /* Sends request of a query and calls a function to display the results. Also: set state in history. */
     request: function(push) {
         var url = '/' + Asq.current.db + '/' + Asq.current.queryId;
@@ -579,7 +610,7 @@ var Asq = {
         var queryStringStarted = false;
 
         $.each(Asq.current.args, function(argkey, argval) {
-            url += (queryStringStarted ? '&' : '?') + argkey + '=' + encodeURIComponent(argval);
+            url += (queryStringStarted ? '&' : '?') + encodeURIComponent(argkey) + '=' + encodeURIComponent(argval);
             queryStringStarted = true;
         });
 
@@ -626,9 +657,9 @@ var Asq = {
                 Asq.current.name = data.query.name;
                 Asq.current.sql = data.query.query;
 
-                if (!hasResults) return;
-
                 $('header .edit.hide,header .export.hide').removeClass('hide');
+
+                if (!hasResults) return;
 
                 Asq.current.totalRows = data.query.totalRows;
 
@@ -668,6 +699,10 @@ var Asq = {
 
         if (queryId !== 0) {
             Asq.current.queryId = queryId;
+
+            var elm = $('.query-list a[data-id="' + queryId + '"]');
+            elm.addClass('current');
+            $('.queries input').attr('placeholder', elm.find('strong').text());
         }
 
         Asq.current.sortColumn = (typeof parts[5] != 'undefined') ? parts[5] : null;
