@@ -1,6 +1,7 @@
 var Asq = {
     searchTimer: null,
     current: {
+        args: {},
         db: 'eh_nl_www',
         queryId: null,
         sortColumn: null,
@@ -30,8 +31,8 @@ var Asq = {
         Asq.setExport();
         Asq.setSyntaxHighlighting();
 
-        $('.search-in-queries');
         $('.search-in-results').bind('keyup change click', Asq.searchInResults);
+        $('#argsform').submit(Asq.setArgs);
 
         window.addEventListener('popstate', function(e) {
             Asq.popstate(e);
@@ -441,6 +442,13 @@ var Asq = {
                 }
             }
 
+            var queryStringStarted = false;
+
+            $.each(Asq.current.args, function(argkey, argval) {
+                url += (queryStringStarted ? '&' : '?') + argkey + '=' + encodeURIComponent(argval);
+                queryStringStarted = true;
+            });
+
             window.location.href = url;
         }
     },
@@ -450,6 +458,108 @@ var Asq = {
     /* Initiate pretty syntax hightlighting. */
     setSyntaxHighlighting: function() {
         Asq.editor = CodeMirror.fromTextArea(document.getElementById('edit-query'));
+    },
+
+
+
+    setArgsDialog: function(open, showMessage) {
+        var argsElm = $('#args'),
+            html = '',
+            inputClass,
+            info;
+
+        $.each(Asq.requestedArgs, function(index, arg) {
+            if (arg[1] == 'DATE') {
+                inputClass = 'date-pick';
+
+                if (arg[3]) {
+                    info = arg[3];
+                }
+                else {
+                    info = 'date';
+                }
+            }
+            else {
+                inputClass = false;
+                info = arg[1].toLowerCase();
+            }
+
+            html += '<li>' +
+                        '<label for="arg-' + arg[2] + '">' +
+                            arg[2] +
+                            ' <small>(' + info + ')</small>' +
+                        '</label>' +
+                        '<input id="arg-' + arg[2] + '"' + (inputClass ? ' class="' + inputClass + '"' : '') + '>' +
+                    '</li>';
+        });
+
+        argsElm.find('ul').html(html);
+
+        Date.firstDayOfWeek = 0;
+        Date.format = 'yyyy-mm-dd';
+
+        argsElm.find('.date-pick').datePicker({
+            startDate: '1996-01-01'
+        });
+
+        $.each(location.search.split(/\?|&/), function(index, elm) {
+            if (elm.indexOf('arg-') == 0) {
+                var keyval = elm.split('=');
+
+                Asq.current.args[keyval[0]] = keyval[1];
+
+                argsElm.find('#' + keyval[0]).val(decodeURIComponent(keyval[1]));
+            }
+        });
+
+        if (open) {
+            argsElm.removeClass('hide');
+
+            if (showMessage) {
+                argsElm.find('.no-results-message').removeClass('hide');
+            }
+            else {
+                argsElm.find('.no-results-message').addClass('hide');
+            }
+        }
+        $('.icon.args.hide').removeClass('hide');
+    },
+
+
+
+    setArgs: function(e) {
+        e.preventDefault();
+
+        Asq.current.args = {};
+
+        var elm, val;
+
+        $.each(Asq.requestedArgs, function(index, arg) {
+            elm = $('input#arg-' + arg[2]);
+            val = elm.val();
+
+            switch (arg[1].toLowerCase()) {
+                case 'date' :
+                    if (arg[3]) {
+                        if (arg[3] == 'year') val = val.substring(0, 4);
+                        if (arg[3] == 'month') val = val.substring(0, 7);
+                    }
+                    break;
+
+                case 'int' :
+                    val = parseInt(val, 10);
+                    break;
+
+                case 'float' :
+                    val = parseFloat(val, 10);
+                    break;
+            }
+
+            Asq.current.args['arg-' + arg[2]] = val;
+        });
+
+
+        Asq.request();
     },
 
 
@@ -466,17 +576,35 @@ var Asq = {
             }
         }
 
+        var queryStringStarted = false;
+
+        $.each(Asq.current.args, function(argkey, argval) {
+            url += (queryStringStarted ? '&' : '?') + argkey + '=' + encodeURIComponent(argval);
+            queryStringStarted = true;
+        });
+
         if (typeof push == 'undefined') {
             history.pushState({
                 id: Asq.current.queryId,
                 db: Asq.current.db,
                 sortColumn: Asq.current.sortColumn,
-                sortDir: Asq.current.sortDir
+                sortDir: Asq.current.sortDir,
+                args: Asq.current.args
             }, 'ASQ', url);
         }
 
         Asq.current.offsetRow = 0;
         Asq.current.requesting = 0;
+
+        var data = {
+                id: Asq.current.queryId,
+                db: Asq.current.db,
+                sortColumn: Asq.current.sortColumn,
+                sortDir: Asq.current.sortDir,
+                offset: 0
+            };
+
+        $.extend(data, Asq.current.args);
 
         $('body').addClass('loading loading-query');
         $('section').addClass('hide');
@@ -484,23 +612,27 @@ var Asq = {
         $.ajax('/results', {
             dataType: 'json',
             type: 'post',
-            data: {
-                id: Asq.current.queryId,
-                db: Asq.current.db,
-                sortColumn: Asq.current.sortColumn,
-                sortDir: Asq.current.sortDir,
-                offset: 0
-            },
+            data: data,
             success: function(data) {
                 $('body').removeClass('loading loading-query');
+
+                var hasResults = typeof data.results != 'undefined' && data.results.length != 0;
+
+                if (data.args) {
+                    Asq.requestedArgs = data.args;
+                    Asq.setArgsDialog(!hasResults, typeof data.results != 'undefined' && data.results.length == 0);
+                }
+
+                Asq.current.name = data.query.name;
+                Asq.current.sql = data.query.query;
+
+                if (!hasResults) return;
+
                 $('header .edit.hide,header .export.hide').removeClass('hide');
 
                 Asq.current.totalRows = data.query.totalRows;
 
                 Asq.displayData(data.results);
-
-                Asq.current.name = data.query.name;
-                Asq.current.sql = data.query.query;
 
                 Asq.setLinks();
 
@@ -539,9 +671,28 @@ var Asq = {
         }
 
         Asq.current.sortColumn = (typeof parts[5] != 'undefined') ? parts[5] : null;
-        Asq.current.sortDir = (parts[6] == 'desc') ? 'desc' : 'asc';
+
+        if (Asq.current.sortColumn && Asq.current.sortColumn.indexOf('?') != -1) {
+            Asq.current.sortColumn = Asq.current.sortColumn.substring(0, Asq.current.sortColumn.indexOf('?'));
+        }
+
+        Asq.current.sortDir = (parts[6] && parts[6].substring(0, 4) == 'desc') ? 'desc' : 'asc';
 
         $('#dblist').val(Asq.current.db);
+
+        Asq.current.args = {};
+
+        $.each(location.search.split(/\?|&/), function(index, elm) {
+            if (elm.indexOf('arg-') == 0) {
+                var keyval = elm.split('=');
+
+                Asq.current.args[keyval[0]] = keyval[1];
+
+                $('#args #' + keyval[0]).val(decodeURIComponent(keyval[1]));
+
+                $('.icon.args.hide').removeClass('hide');
+            }
+        });
 
         Asq.request(true);
     },
@@ -562,6 +713,8 @@ var Asq = {
         var dbElm = $('.db');
         dbElm.find('.current').removeClass('current');
         dbElm.find('a[data-db-name="' + Asq.current.db + '"]').addClass('current');
+
+        Asq.current.args = props.args;
 
         Asq.request(true);
     },
@@ -588,7 +741,7 @@ var Asq = {
                 column += '/desc';
             }
 
-            elm.attr('href', '/' + Asq.current.db + '/' + Asq.current.queryId + '/' + column);
+            elm.attr('href', '/' + Asq.current.db + '/' + Asq.current.queryId + '/' + column + location.search);
         });
     },
 
@@ -681,16 +834,20 @@ var Asq = {
 
             $('body').addClass('loading loading-query');
 
-            $.ajax('/results', {
-                dataType: 'json',
-                type: 'post',
-                data: {
+            var data = {
                     id: Asq.current.queryId,
                     db: Asq.current.db,
                     sortColumn: Asq.current.sortColumn,
                     sortDir: Asq.current.sortDir,
                     offset: Asq.current.requesting
-                },
+                };
+
+            $.extend(data, Asq.current.args);
+
+            $.ajax('/results', {
+                dataType: 'json',
+                type: 'post',
+                data: data,
                 success: function(data) {
                     $('body').removeClass('loading loading-query');
                     Asq.current.offsetRow = Asq.current.requesting;
