@@ -37,3 +37,4 @@ Thumbs.db
 # SASS Cache
 .sass-cache
 config.yml
+Gemfile.lock
