@@ -35,7 +35,7 @@ Arguments in queries
 [DATE:Some_year;type=year,compact=true] for a year that will not be padded on the right.
 ```
 
-* Note that for comparison with the `=` you need to wrap the column name in the `DATE(`columnname`)` or one of the other date functions in MySQL. <http://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html>
+* Note that for comparison with the `=` you need to wrap the column name in the `DATE(\`columnname\`)` or one of the other date functions in MySQL. <http://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html>
 * The names of the variables can't contain spaces.
 * If you use strings in a comparison, wrap the code around quotes, otherwise MySQL does not know that it is dealing with strings.
 
