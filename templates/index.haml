@@ -21,6 +21,7 @@
 
     %a.open.icon.add{ :href => '#', 'data-ref' => 'edit' } Add
     %a.open.icon.edit.hide{ :href => '#', 'data-ref' => 'edit' } Edit
+    %a.open.icon.args.hide{ :href => '#', 'data-ref' => 'args' } Args
     %a.open.icon.export.hide{ :href => '#', 'data-ref' => 'export' } Export
 
     %input.search-in-results{ :type => 'search', :placeholder => 'Search in results' }
@@ -39,6 +40,15 @@
                 %input{ :type => 'hidden', :id => 'edit-id', :name => 'edit-id', :value => 'false' }
                 %a.delete-query.hide.icon.delete{ :href => '#' } Delete query
                 %input{ :type => 'submit', :id => 'edit-submit', :value => 'Save' }
+
+%section#args.hide
+    %div
+        %h1 Query arguments
+        %p.no-results-message.hide No results found for given input.
+        %form#argsform{ :action => '/', :method => 'post' }
+            %ul.args
+            %p
+                %input{ :type => 'submit', :id => 'args-submit', :value => 'Request' }
 
 %section#export.hide
     %div
