@@ -72,6 +72,8 @@ class QueryRow
     def results(params, limit = 100)
         result = DB[:queries].where(:id => @id, :active => 'true').first
 
+        pattern = /(\[(DATE|INT|FLOAT|STRING):(.+?)(;.+?)?\])/
+
         if (result)
             result[:query] = HTMLEntities.new.decode(result[:query])
             query = {
@@ -79,6 +81,29 @@ class QueryRow
                 'name' => result[:name],
                 'query' => result[:query]
             }
+
+            queryArgs = query['query'].scan(pattern)
+
+            if queryArgs.empty?
+                queryToExecute = query['query']
+            else
+                queryArgs.each do |arg|
+                    if params['arg-' + arg[2]].nil?
+                        default = QueryRow.getArgParam(arg[3], 'default')
+
+                        if default.nil?
+                            return { :query => query, :args => queryArgs }
+                        else
+                            params['arg-' + arg[2]] = default
+                        end
+                    end
+                end
+
+                queryToExecute = query['query'].gsub(pattern) { |match|
+                    match = match.scan(pattern)
+                    params['arg-' + match[0][2]]
+                }
+            end
 
             seconddb = Sequel.connect(
                 :adapter => 'mysql2',
@@ -92,9 +117,13 @@ class QueryRow
 
             toReturn = []
 
-            results = seconddb[result[:query]]
+            results = seconddb[queryToExecute]
 
             query['totalRows'] = results.count
+
+            unless (params[:sortColumn].nil?)
+                params[:sortColumn] = params[:sortColumn].split('?').first
+            end
 
             if !params[:sortColumn].nil? && params[:sortColumn] != 'null'
                 if params[:sortDir] == 'desc'
@@ -110,9 +139,20 @@ class QueryRow
                 toReturn.push(results)
             end
 
-            { :query => query, :results => toReturn }
+            if (queryArgs.empty?)
+                { :query => query, :results => toReturn }
+            else
+                { :query => query, :results => toReturn, :args => queryArgs }
+            end
         else
             { 'success' => false }
         end
+    end
+
+
+    def self.getArgParam(haystack, needle)
+        result = haystack.match('(^|,|;)' + needle + '=(.+?)(,|$)') unless haystack.nil?
+        result = result[2] unless result.nil?
+        result
     end
 end

@@ -74,6 +74,9 @@ body
 .icon.edit::before
     content: "\f040"
 
+.icon.args::before
+    content: "\f069"
+
 .icon.export::before
     content: "\f045"
 
@@ -390,6 +393,37 @@ section
         &:focus
             color: #C00
             text-decoration: underline
+
+#dp-popup
+    margin-top: 20px
+
+#args
+    .no-results-message
+        font-style: italic
+
+    .args li
+        list-style: none
+        margin: 0
+        overflow: hidden
+        padding: 0.5em 0
+
+        label
+            float: left
+            width: 30%
+
+        input
+            float: right
+            width: 65%
+
+        a.dp-choose-date
+            background: url(/images/icon-date.png) no-repeat
+            float: right
+            height: 17px
+            margin: 5px 3px 0
+            overflow: hidden
+            padding: 0
+            text-indent: -9999em
+            width: 16px
 
 table
     border-spacing: 0
