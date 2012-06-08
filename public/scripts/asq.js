@@ -801,7 +801,8 @@ var Asq = {
         }
 
         var rowHtml,
-            count = 0;
+            count = 0,
+            format = Asq.formatData;
 
         $.each(results, function(index, row) {
             rowHtml = $('<tr>');
@@ -819,7 +820,7 @@ var Asq = {
 
                     Asq.tableHead.find('tr').append('<th data-offset="' + count + '"><a href="#" data-column="' + header + '"' + (aClass ? ' class="' + aClass + '"' : '') + '>' + header + '</a></th>');
                 }
-                rowHtml.append('<td>' + data + '</td>');
+                rowHtml.append('<td>' + format(data) + '</td>');
                 ++count;
             });
             rowHtml.appendTo(Asq.table.find('tbody'));
@@ -831,6 +832,31 @@ var Asq = {
         
         Asq.setHeaders();
         Asq.zebraStripe();
+    },
+
+
+
+
+    formatData: function(data) {
+        var parsedNumber = parseFloat(data, 10),
+            x, x1, x2;
+
+        if (!isNaN(parsedNumber)) {
+            /* Format the dumber: commas as thousand separator and max three digits after the decimal separator */
+            parsedNumber = parsedNumber.toString();
+            x = parsedNumber.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1].substring(0, 3) : '';
+            var rgx = /(\d+)(\d{3})/;
+            
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+
+            return x1 + x2;
+        }
+
+        return data;
     },
 
 
