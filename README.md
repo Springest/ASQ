@@ -12,6 +12,7 @@ Install
 * Install bundles with `bundle install`;
 * Open `install.sql` and execute it in a MySQL DB, via for example phpmyadmin or Sequel Pro;
 * Edit `config.EXAMPLE.yml` to desired settings and save it as `config.yml`;
+* Edit `Rakefile.EXAMPLE` and save as `Rakefile`.
 * Run with `bundle exec shotgun`;
 * Open `http://localhost:9393` in your browser;
 * Log in and query away!

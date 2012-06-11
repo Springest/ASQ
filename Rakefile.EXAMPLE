@@ -1,10 +1,10 @@
 require 'rubygems'
 require 'net/ssh'
 
-HOST = 'springest.biz'
-USER = 'webdev'
-DIR  = '/var/www/asq.springest.biz'
-PORT = '3020'
+HOST = ''
+USER = ''
+DIR  = ''
+PORT = ''
 
 task :deploy => ['deploy:pull', 'deploy:push', 'deploy:deploy', 'deploy:restart', 'deploy:tag']
 

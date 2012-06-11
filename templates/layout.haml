@@ -7,6 +7,8 @@
     %link{ :href => '/styles/screen.css', :media => 'screen', :rel => 'stylesheet' }
     %link{ :href => '/scripts/codemirror/lib/codemirror.css', :media => 'screen', :rel => 'stylesheet' }
     %link{ :href => '/scripts/datepicker/datepicker.css', :media => 'screen', :rel => 'stylesheet' }
+    - unless Config['misc']['defaultDb'] === false
+      %meta{ :name => 'default-db', :content => Config['misc']['defaultDb'] }
 
   %body
     = yield

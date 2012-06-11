@@ -10,4 +10,15 @@ DB = Sequel.connect(
         :reconnect => true
     )
 
-ListDBs = DB['SHOW DATABASES'].to_a.delete_if{ |db| db[:Database].match(/_www/).nil? }
+ListDBs = DB['SHOW DATABASES'].to_a.delete_if {
+    |db|
+    if Config['misc']['dblistMatch']
+        db[:Database].match(
+            Regexp.new(
+                Config['misc']['dblistMatch']
+            )
+        ).nil?
+    else 
+        false
+    end
+}

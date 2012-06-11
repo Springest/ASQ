@@ -10,6 +10,7 @@ GEM
     eventmachine (0.12.10)
     fssm (0.2.7)
     haml (3.1.4)
+    htmlentities (4.3.1)
     json (1.6.5)
     mysql2 (0.3.11)
     rack (1.4.1)
@@ -38,6 +39,7 @@ PLATFORMS
 DEPENDENCIES
   compass
   haml
+  htmlentities
   json
   mysql2
   sass

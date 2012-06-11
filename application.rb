@@ -18,7 +18,7 @@ class Application < Sinatra::Base
 
     configure do
         set :dump_errors, true
-        set :haml, { :ugly => false, :attr_wrapper => '"' }
+        set :haml, { :ugly => false, :attr_wrapper => '"', :format => :html5 }
         set :clean_trace, true
         set :environment, :development
     end

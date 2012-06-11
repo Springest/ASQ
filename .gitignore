@@ -37,4 +37,5 @@ Thumbs.db
 # SASS Cache
 .sass-cache
 config.yml
+Rakefile
 Gemfile.lock

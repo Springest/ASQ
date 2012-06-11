@@ -6,3 +6,6 @@ db:
 login:
   user: 'root'
   pass: 'default'
+misc:
+  defaultDb: false # the DB that will be selected by default
+  dblistMatch: false # bool false or string with regex to filter databases.

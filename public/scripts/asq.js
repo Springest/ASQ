@@ -2,7 +2,7 @@ var Asq = {
     searchTimer: null,
     current: {
         args: {},
-        db: 'eh_nl_www',
+        db: null,
         queryId: null,
         sortColumn: null,
         sortDir: 'asc',
@@ -41,6 +41,8 @@ var Asq = {
         $(window).keydown(Asq.checkShortcuts);
         $(window).scroll(Asq.infiniteScroll);
         $(window).scroll(Asq.setHeaders);
+
+        Asq.current.db = $('meta[name="default-db"]').attr('content');
 
         Asq.recover();
     },
@@ -137,10 +139,17 @@ var Asq = {
             dbsElm.find('.current').removeClass('current');
 
             Asq.current.db = $(this).addClass('current').attr('data-db-name');
+
+            if (!Asq.current.queryId) {
+                var firstQuery = $('.queries ul a:first');
+                firstQuery.addClass('current');
+                $('.search-in-queries').attr('placeholder', firstQuery.find('strong').text());
+                Asq.current.queryId = parseInt(firstQuery.attr('data-id'), 10);
+            }
+
             Asq.current.sortColumn = null;
             Asq.current.sortDir = 'asc';
             Asq.current.args = {};
-
 
             Asq.request();
         }
@@ -380,6 +389,8 @@ var Asq = {
                 id = idElm.val(),
                 editing = false;
 
+            Asq.current.sql = data['edit-query'];
+
             if (id != 'false') {
                 data['edit-id'] = id;
                 editing = true;
@@ -406,17 +417,26 @@ var Asq = {
                         Asq.current.sortColumn = null;
                         Asq.current.sortDir = 'asc';
 
+                        var queriesElm = $('.queries ul').find('.current').removeClass('current').end();
+
                         if (!editing) {
                             var html = '<li>' +
-                                            '<a href="#" data-id="' + id + '">' +
-                                                '<span>' + id + '</span>' +
+                                            '<a class="current" href="#" data-id="' + id + '">' +
+                                                '<span>' + id + '</span> ' +
                                                 '<strong>' + data['edit-name'] + '</strong>' +
                                             '</a>' +
                                             '<a href="#" class="edit" title="Edit" data-id="' + elm.find('a').attr('data-id') + '">&#xF040;</a>' +
                                         '</li>';
 
-                            $('.queries ul').append(html);
+                            queriesElm.append(html);
                         }
+                        else {
+                            queriesElm.find('a[data-id="' + id + '"]:first').addClass('current').find(' strong').text(data['edit-name']);
+                        }
+
+                        $('header .edit.hide,header .export.hide').removeClass('hide');
+
+                        $('.queries input').attr('placeholder', data['edit-name']);
 
                         Asq.request();
                     }
@@ -675,6 +695,10 @@ var Asq = {
                 var errorMessage = xhr.responseText.split("\n")[0];
 
                 Asq.giveMessage(errorMessage, 10000);
+
+                $('header .edit.hide').removeClass('hide');
+
+                $('.queries ul a.edit[data-id="' + data['id'] + '"]').trigger('click');
             }
         });
     },
