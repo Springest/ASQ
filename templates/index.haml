@@ -60,3 +60,33 @@
                 %em
                     Google Docs
                     %strong Coming soon!
+
+%section#logger.hide
+    %div
+        %h1 Log
+        %ul.log
+            %li
+                %h2 Page rendered
+                %p
+                    %small= DateTime.now
+
+%section#about.hide
+    %div
+        %h1 About
+        %p ASQ: <b>A</b>wesome <b>S</b>uper <b>Q</b>ueries <small>(Or: <b>AS</b>k with a <b>Q</b>uery.)</small>
+        %p More info in the <a href="https://github.com/Springest/ASQ">Github repository</a>.
+        %h2 Arguments in queries
+        %ul
+            %li Open the add/edit a query dialog.
+            %li 
+                On the place where you want to use an argument, insert one of the following things:
+                %code.blockcode
+                    [INT:Number]<br>
+                    [FLOAT:Another_number;default=5.7]<br>
+                    [STRING:Name_of_the_string;default=hallo] for a string with default value 'hallo' (without quotes).<br>
+                    [DATE:Some_date]<br>
+                    [DATE:Month;type=month] for a month (will be padded like this if the input is `2012-05-13`): `2012-05-01`<br>
+                    [DATE:Some_year;type=year,compact=true] for a year that will not be padded on the right.
+            %li Note that for comparison with the <code>=</code> you need to wrap the column name in the <code>DATE(columnname)</code> or one of the other date functions in MySQL. <a href="http://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html">See also the documentation on the MySQL website.</a>
+            %li The names of the variables can't contain spaces.
+            %li If you use strings in a comparison, wrap the code around quotes, otherwise MySQL does not know that it is dealing with strings.

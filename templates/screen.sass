@@ -92,9 +92,13 @@ body
     content: "\f078"
 
 
-h1
+h1,
+h2
     font: bold 2.4em Monaco, 'Courier New', Courier, monospace
     text-transform: uppercase
+
+h2
+    font-size: 1.6em
 
 p,
 ul,
@@ -480,6 +484,36 @@ table
             &:hover
                 background: #FFF url(/images/resize.png) repeat-y 100% 0
 
+.optionsmenu
+    background: #666
+    border-radius: 0.4em
+    color: #FFF
+    left: 2px
+    padding: 8px
+    position: fixed
+    top: 2px
+    z-index: 5
+
+    li
+        list-style: none
+        margin: 0
+        padding: 0
+
+        a
+            background: transparent
+            border-radius: 0.4em
+            color: #FFF
+            display: block
+            margin: 0.15em 0
+            padding: 0.25em 0.5em
+            position: relative
+            text-decoration: none
+
+            &:hover,
+            &:focus
+                background: #DDD
+                color: #111
+
 .meta-results
     background: rgba(7, 7, 7, 0.5)
     border-top-left-radius: 0.5em
@@ -495,3 +529,57 @@ table
 
     &:hover
         opacity: 0
+
+#about,
+#logger
+    div
+        max-height: 40em
+        overflow: auto
+
+    h2
+        margin: 1.25em 0 0.25em
+
+    li
+        line-height: 1.25em
+        margin-bottom: 1.25em
+
+        &:last-child
+            margin-bottom: 0
+
+    .blockcode
+        background: #E8E8E8
+        border: 1px solid #EEE
+        display: block
+        margin: 1.5em
+        padding: 1.5em
+
+#logger .log
+    > li
+        cursor: pointer
+        list-style: none
+        margin: 0
+        padding: 0.5em
+
+        &:nth-child(even)
+            background: #E8E8E8
+
+        h2
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif
+            font-size: 1em
+            margin: 0
+            text-transform: none
+
+        > p,
+        > ul
+            display: none
+
+            li
+                margin-bottom: 0
+
+        &.open > p,
+        &.open > ul
+            display: block
+
+        small
+            color: #999
+            font-style: italic

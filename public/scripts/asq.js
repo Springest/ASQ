@@ -30,6 +30,8 @@ var Asq = {
         Asq.setEditAjax();
         Asq.setExport();
         Asq.setSyntaxHighlighting();
+        Asq.setOptionsMenu();
+        Asq.setLogger();
 
         $('.search-in-results').bind('keyup change click', Asq.searchInResults);
         $('#argsform').submit(Asq.setArgs);
@@ -98,6 +100,8 @@ var Asq = {
 
             var id = parseInt($('#edit-id').val(), 10);
 
+            Asq.log('Delete query.', { id: id });
+
             $('body').addClass('loading');
             $.ajax('/query/' + id, {
                 type: 'DELETE',
@@ -105,16 +109,21 @@ var Asq = {
                     $('body').removeClass('loading');
                     if (data.success === false) {
                         Asq.giveMessage('Something went wrong while deleting a query. Please try again.');
+
+                        Asq.log('Something went wrong while deleting a query. Please try again.', { id: id });
                     }
                     else {
                         $('.query-list a[data-id="' + id + '"]:first').parent().remove();
                         $('section').addClass('hide');
                         Asq.giveMessage('Query deleted.');
+                        Asq.log('Succesfully deleted query.', { id: id });
                     }
                 },
                 error: function() {
                     $('body').removeClass('loading');
                     Asq.giveMessage('Something went wrong while deleting a query. Please try again.');
+
+                        Asq.log('Something went wrong while deleting a query. Please try again.', { id: id });
                 }
             });
         }
@@ -279,6 +288,8 @@ var Asq = {
 
             hideQueryList();
 
+            Asq.log('Request query info for edit.', { id: id });
+
             $('body').addClass('loading');
             $.ajax('/query/' + id, {
                 type: 'GET',
@@ -286,10 +297,14 @@ var Asq = {
                 success: function(data) {
                     $('body').removeClass('loading');
                     Asq.setEditForm(data);
+
+                    Asq.log('Display query edit dialog.', { id: id });
                 },
                 error: function() {
                     $('body').removeClass('loading');
                     Asq.giveMessage('Something went wrong while fetch info of the requested query. Please try again.');
+
+                    Asq.log('Could not load query info.', { id: id });
                 }
             });
         }
@@ -391,6 +406,8 @@ var Asq = {
 
             Asq.current.sql = data['edit-query'];
 
+            Asq.log('Submitting changes for query.', data);
+
             if (id != 'false') {
                 data['edit-id'] = id;
                 editing = true;
@@ -409,9 +426,13 @@ var Asq = {
 
                     if (!id) {
                         Asq.giveMessage(editing ? 'Something went wrong editing the query. Please try again.': 'Something went wrong adding the query. Please try again.');
+
+                        Asq.log(editing ? 'Something went wrong editing the query. Please try again.': 'Something went wrong adding the query. Please try again.');
                     }
                     else {
                         Asq.giveMessage(editing ? 'Query edited!' : 'Query added!');
+
+                        Asq.log(editing ? 'Query edited!' : 'Query added!', { id: id });
 
                         Asq.current.queryId = id;
                         Asq.current.sortColumn = null;
@@ -443,7 +464,10 @@ var Asq = {
                 },
                 error: function() {
                     $('body').removeClass('loading');
+
                     Asq.giveMessage(editing ? 'Something went wrong editing the query. Please try again.': 'Something went wrong adding the query. Please try again.');
+
+                    Asq.log(editing ? 'Something went wrong editing the query. Please try again.': 'Something went wrong adding the query. Please try again.');
                 }
             });
         }
@@ -485,6 +509,49 @@ var Asq = {
     /* Initiate pretty syntax hightlighting. */
     setSyntaxHighlighting: function() {
         Asq.editor = CodeMirror.fromTextArea(document.getElementById('edit-query'));
+    },
+
+
+
+    setOptionsMenu: function() {
+        var optionsMenu = $('<div class="optionsmenu hide">' +
+                                '<h1>Asq</h1>' +
+                                '<ul>' +
+                                    '<li><a href="#" data-ref="logger">Logger</a></li>' +
+                                    '<li><a href="#" data-ref="about">About</a></li>' +
+                                '</ul>' +
+                            '</div>');
+
+        optionsMenu.appendTo('body');
+        optionsMenu.on('click', 'a', open);
+
+        $('header h1').mouseover(function(e) {
+            optionsMenu.removeClass('hide');
+        });
+
+        optionsMenu.mouseleave(function(e) {
+            optionsMenu.addClass('hide');
+        });
+
+
+        function open(e) {
+            e.preventDefault();
+
+            var elm = $(this),
+                toOpen = elm.attr('data-ref');
+
+            $('section').addClass('hide');
+
+            $('#' + toOpen).removeClass('hide');
+        }
+    },
+
+
+
+    setLogger: function() {
+        $('#logger .log').on('click', 'li', function(e) {
+            $(this).toggleClass('open');
+        });
     },
 
 
@@ -549,6 +616,8 @@ var Asq = {
 
             if (showMessage) {
                 argsElm.find('.no-results-message').removeClass('hide');
+
+                Asq.log('No results for args.', Asq.current.args);
             }
             else {
                 argsElm.find('.no-results-message').addClass('hide');
@@ -660,6 +729,8 @@ var Asq = {
         $('body').addClass('loading loading-query');
         $('section').addClass('hide');
 
+        Asq.log('Requesting results for query.', data);
+
         $.ajax('/results', {
             dataType: 'json',
             type: 'post',
@@ -683,6 +754,8 @@ var Asq = {
 
                 Asq.current.totalRows = data.query.totalRows;
 
+                Asq.log('Received results for query.', Asq.current);
+
                 Asq.displayData(data.results);
 
                 Asq.setLinks();
@@ -699,6 +772,12 @@ var Asq = {
                 $('header .edit.hide').removeClass('hide');
 
                 $('.queries ul a.edit[data-id="' + data['id'] + '"]').trigger('click');
+
+                var errorData = {};
+
+                $.extend(errorData, xhr, Asq.current);
+
+                Asq.log('Error receiving results for query.', errorData);
             }
         });
     },
@@ -753,6 +832,8 @@ var Asq = {
             }
         });
 
+        Asq.log('Recovering state.', Asq.current);
+
         Asq.request(true);
     },
 
@@ -774,6 +855,8 @@ var Asq = {
         dbElm.find('a[data-db-name="' + Asq.current.db + '"]').addClass('current');
 
         Asq.current.args = props.args;
+
+        Asq.log('Popping state.', Asq.current);
 
         Asq.request(true);
     },
@@ -929,6 +1012,8 @@ var Asq = {
 
             $.extend(data, Asq.current.args);
 
+            Asq.log('Infinite scroll.', data);
+
             $.ajax('/results', {
                 dataType: 'json',
                 type: 'post',
@@ -939,6 +1024,8 @@ var Asq = {
                     Asq.displayData(data.results, true);
                     Asq.searchInResults(true);
 
+                    Asq.log('Infinite scroll data received and displayed.');
+
                     if (typeof e == 'boolean' && bodyHeight < windowHeight && ((Asq.current.offsetRow + 1) * 100) < Asq.current.totalRows) {
                         Asq.infiniteScroll(true);
                     }
@@ -947,6 +1034,8 @@ var Asq = {
                     $('body').removeClass('loading loading-query');
                     Asq.giveMessage('Something went wrong fetching that query. Please try again.');
                     Asq.current.requesting = Asq.current.offsetRow;
+
+                    Asq.log('Something went wrong fetching that query. Please try again.');
                 }
             });
         }
@@ -1160,6 +1249,29 @@ var Asq = {
                 $('.search-in-results').val('')[0].focus();
             }
         }
+    },
+
+
+
+    log: function(headline, details) {
+        var displayDetails = '';
+
+        if (typeof details == 'object') {
+            displayDetails = '<ul>';
+            $.each(details, function(key, val) {
+                displayDetails += '<li><strong>' + key + ':</strong> ' + val + '</li>';
+            });
+            displayDetails += '</ul>';
+        }
+        else if (typeof details == 'string') {
+            displayDetails = '<p>' + details + '</p>';
+        }
+
+        $('#logger .log').prepend('<li>' +
+                                      '<h2>' + headline + '</h2>' +
+                                       displayDetails +
+                                      '<p><small>(' + (new Date) + ')</small></p>' +
+                                  '</li>');
     }
 }
 
