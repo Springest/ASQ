@@ -88,7 +88,6 @@ class QueryRow
                 queryToExecute = query['query']
             else
                 queryArgs.each do |arg|
-                    p params['arg-' + arg[2]]
                     if params['arg-' + arg[2]].nil?
                         default = QueryRow.getArgParam(arg[3], 'default')
 
