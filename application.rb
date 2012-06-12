@@ -66,6 +66,18 @@ class Application < Sinatra::Base
     end
 
 
+    post '/autosuggestable' do
+        results = QueryRow.autosuggest(params[:db], params[:table], params[:column], params[:query])
+
+        toReturn = {
+            :results => results,
+            :version => params[:version]
+        }
+
+        toReturn.to_json
+    end
+
+
     ['/:db/:query', '/:db/:query/:order', '/:db/:query/:order/desc', '/'].each do |path|
         get path do
             @queries = QueryTable.all

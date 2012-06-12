@@ -88,6 +88,7 @@ class QueryRow
                 queryToExecute = query['query']
             else
                 queryArgs.each do |arg|
+                    p params['arg-' + arg[2]]
                     if params['arg-' + arg[2]].nil?
                         default = QueryRow.getArgParam(arg[3], 'default')
 
@@ -101,7 +102,7 @@ class QueryRow
 
                 queryToExecute = query['query'].gsub(pattern) { |match|
                     match = match.scan(pattern)
-                    params['arg-' + match[0][2]]
+                    CGI::unescape(params['arg-' + match[0][2]])
                 }
             end
 
@@ -154,5 +155,28 @@ class QueryRow
         result = haystack.match('(^|,|;)' + needle + '=(.+?)(,|$)') unless haystack.nil?
         result = result[2] unless result.nil?
         result
+    end
+
+
+    def self.autosuggest(db, table, column, query)
+        seconddb = Sequel.connect(
+            :adapter => 'mysql2',
+            :host => Config['db']['host'],
+            :user => Config['db']['user'],
+            :password => Config['db']['pass'],
+            :database => db,
+            :timeout => 30,
+            :reconnect => true
+        )
+
+        toReturn = []
+
+        results = seconddb[table.to_sym].filter(column.to_sym.like('%' + query + '%')).limit(14)
+
+        results.each do |results|
+            toReturn.push(results[column.to_sym])
+        end
+
+        toReturn
     end
 end

@@ -34,6 +34,7 @@ Arguments in queries
 [DATE:Some_date]
 [DATE:Month;type=month] for a month (will be padded like this if the input is `2012-05-13`): `2012-05-01`
 [DATE:Some_year;type=year,compact=true] for a year that will not be padded on the right.
+[STRING:SubjectName;autosuggest=subjects.name] for an autosuggest served from table 'subject' column 'name'.
 ```
 
 * Note that for comparison with the `=` you need to wrap the column name in the `DATE(columnname)` or one of the other date functions in MySQL. <http://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html>

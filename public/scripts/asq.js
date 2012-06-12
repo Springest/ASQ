@@ -47,6 +47,8 @@ var Asq = {
         Asq.current.db = $('meta[name="default-db"]').attr('content');
 
         Asq.recover();
+
+        Asq.log('Page rendered.');
     },
 
 
@@ -563,6 +565,8 @@ var Asq = {
             info;
 
         $.each(Asq.requestedArgs, function(index, arg) {
+            var extraAttrs = '';
+
             if (arg[1] == 'DATE') {
                 inputClass = 'date-pick';
 
@@ -574,6 +578,11 @@ var Asq = {
                 else {
                     info = 'date';
                 }
+            }
+            else if (arg[1] == 'STRING' && Asq.getArgParam(arg[3], 'autosuggest')) {
+                inputClass = 'autosuggest';
+                extraAttrs = ' data-autosuggest="' + Asq.getArgParam(arg[3], 'autosuggest') + '"';
+                info = 'string';
             }
             else {
                 inputClass = false;
@@ -587,7 +596,7 @@ var Asq = {
                             arg[2] +
                             ' <small>(' + info + ')</small>' +
                         '</label>' +
-                        '<input id="arg-' + arg[2] + '"' + (inputClass ? ' class="' + inputClass + '"' : '') + ' value="' + value + '">' +
+                        '<input id="arg-' + arg[2] + '"' + (inputClass ? ' class="' + inputClass + '"' : '') + ' value="' + value + '"' + extraAttrs + '>' +
                     '</li>';
         });
 
@@ -599,6 +608,24 @@ var Asq = {
         argsElm.find('.date-pick').datePicker({
             clickInput: true,
             startDate: '1996-01-01'
+        });
+
+        argsElm.find('.autosuggest').each(function(index, elm) {
+            elm = $(elm);
+
+            var tableColumn = elm.attr('data-autosuggest').split('.');
+                data = {
+                    db: Asq.current.db,
+                    table: tableColumn[0],
+                    column: tableColumn[1]
+                };
+
+            elm.autosuggest({
+                data: data,
+                clickLinkCallback: function(aElm) {
+                    elm.val($(aElm).attr('data-suggestion'));
+                }
+            });
         });
 
         $.each(location.search.split(/\?|&/), function(index, elm) {
@@ -945,6 +972,10 @@ var Asq = {
 
 
     formatData: function(data) {
+        if (/[0-9a-z]{40}/i.test(data)) {
+            return data;
+        }
+
         var parsedNumber = parseFloat(data, 10),
             x, x1, x2;
 
