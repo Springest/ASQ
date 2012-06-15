@@ -45,6 +45,7 @@ var Asq = {
         $(window).scroll(Asq.setHeaders);
 
         Asq.current.db = $('meta[name="default-db"]').attr('content');
+        $('.db a[data-db-name="' + Asq.current.db + '"]').addClass('current');
 
         Asq.recover();
 
