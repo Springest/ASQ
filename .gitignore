@@ -39,3 +39,4 @@ Thumbs.db
 config.yml
 Rakefile
 Gemfile.lock
+tmp/
