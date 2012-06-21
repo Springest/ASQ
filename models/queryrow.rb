@@ -170,7 +170,7 @@ class QueryRow
 
         toReturn = []
 
-        results = seconddb[table.to_sym].filter(column.to_sym.like('%' + query + '%')).limit(14)
+        results = seconddb[table.to_sym].filter(column.to_sym.ilike('%' + query + '%')).limit(14)
 
         results.each do |results|
             toReturn.push(results[column.to_sym])
