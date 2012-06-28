@@ -11,7 +11,7 @@ ASQ is a simple yet powerful query tool. It's self hosted, and works with MySQL.
 License
 -------
 
-ASQ is released under MIT License, see the file LICENSE.
+ASQ is released under GPL v3 License, see the file LICENSE.
 
 Install
 -------
