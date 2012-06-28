@@ -731,6 +731,11 @@ var Asq = {
             queryStringStarted = true;
         });
 
+        if (!('pushState' in history) && typeof push == 'undefined') {
+            location.href = url;
+            return;
+        }
+
         if (typeof push == 'undefined') {
             history.pushState({
                 id: Asq.current.queryId,
@@ -1025,7 +1030,9 @@ var Asq = {
     infiniteScroll: function(e) {
         var windowHeight = $(window).height(),
             bodyHeight = $('body').outerHeight(),
-            scrollPosition = $('body').scrollTop();
+            scrollPosition = $(window).scrollTop();
+
+        console.log(windowHeight, ' | ', bodyHeight, ' | ', scrollPosition);
 
         if ((((bodyHeight > windowHeight && (bodyHeight - (windowHeight + scrollPosition)) < 250) || typeof e == 'boolean') && ((Asq.current.offsetRow + 1) * 100) < Asq.current.totalRows)) {
             if (Asq.current.requesting > Asq.current.offsetRow) return;

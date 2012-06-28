@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'sinatra'
+gem 'net-ssh'
 gem 'haml'
 gem 'sass'
 gem 'compass'
