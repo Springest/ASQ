@@ -8,6 +8,11 @@ What is it?
 
 ASQ is a simple yet powerful query tool. It's self hosted, and works with MySQL. It's ideal to use for your business intelligence: run complex queries and export them to CSV (or maybe GDocs in the future). Once a query is stored, anyone in the team can run it, to see what the current results are.
 
+License
+-------
+
+ASQ is released under MIT License, see the file LICENSE.
+
 Install
 -------
 
