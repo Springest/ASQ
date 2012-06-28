@@ -3,6 +3,11 @@ ASQ: Awesome Super Queries
 
 Or: **AS**k with a **Q**uery.
 
+What is it?
+-----------
+
+ASQ is a simple yet powerful query tool. It's self hosted, and works with MySQL. It's ideal to use for your business intelligence: run complex queries and export them to CSV (or maybe GDocs in the future). Once a query is stored, anyone in the team can run it, to see what the current results are.
+
 Install
 -------
 
@@ -21,6 +26,8 @@ Warning!
 --------
 
 The person who is able to access ASQ, can run any query he or she wants. It's strongly adviced to use a separate MySQL user with only `SELECT` query permissions. Otherwise a simple `DROP DATABASE foo` can ruin your site/app.
+
+At Springest we run ASQ on a mirror with slight delay of the working database, to not overload the working database with heavy queries.
 
 Arguments in queries
 --------------------
