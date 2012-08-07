@@ -346,12 +346,7 @@ section
         font-size: 1.3em
 
     .CodeMirror-scroll
-        height: auto
-        max-height: 15em
-        min-height: 4em
-        overflow-y: hidden
-        overflow-x: auto
-        width: 100%
+        height: 50px
 
     input[type="submit"]
         background-color: #999
@@ -385,10 +380,16 @@ section
         width: 1em
 
 #edit
-    left: 3em
+    bottom: 6em
+    left: 7.5%
     margin-left: 0
-    right: 3em
+    right: 7.5%
+    top: 9em
     width: auto
+
+    .error
+        border: 3px double #900
+        padding: 0.7em
 
     .delete-query
         text-decoration: none
@@ -397,6 +398,11 @@ section
         &:focus
             color: #C00
             text-decoration: underline
+
+@media screen and (min-width:1000px)
+    #edit
+        left: 10%
+        right: 10%
 
 #dp-popup
     margin-top: 20px

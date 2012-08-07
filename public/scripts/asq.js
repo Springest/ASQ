@@ -19,6 +19,8 @@ var Asq = {
         tableWidthOnStart: 0,
         cellWidthOnStart: 0
     },
+    codemirorHeight: 50,
+    editingId: 0,
 
 
 
@@ -351,7 +353,20 @@ var Asq = {
 
     /* Called when user wants to add or edit a query. Sets fields and syntax highlighting. */
     setEditForm: function(options) {
-        var elm = $('#edit');
+        var elm = $('#edit').removeClass('hide'),
+            height = elm.innerHeight() - 23,
+            divElm = elm.find('> div');
+
+
+        /* Set the height of the codemirror field */
+        Asq.editor.setSize(null, 50);
+        var currentHeight = divElm[0].scrollHeight,
+            maxHeight = elm.innerHeight() - 10
+
+        if (currentHeight < maxHeight) {
+            Asq.editor.setSize(null, 50 + (maxHeight - currentHeight));
+        }
+
 
         if (typeof options != 'undefined') {
             var idElm = elm.find('#edit-id');
@@ -364,11 +379,16 @@ var Asq = {
                 var titleText = 'Add query';
                 idElm.val('false');
                 elm.find('.delete-query').addClass('hide');
+                elm.find('.error').addClass('hide');
             }
             else {
                 var titleText = 'Edit query';
                 idElm.val(options.id);
                 elm.find('.delete-query').removeClass('hide');
+                if (Asq.editingId !== options.id) {
+                    elm.find('.error').addClass('hide');
+                }
+                Asq.editingId = options.id;
             }
 
             elm.find('h1').text(titleText);
@@ -800,7 +820,9 @@ var Asq = {
 
                 var errorMessage = xhr.responseText.split("\n")[0];
 
-                Asq.giveMessage(errorMessage, 10000);
+                Asq.editingId = data['id'];
+
+                $('#edit .error').removeClass('hide').html(errorMessage);
 
                 $('header .edit.hide').removeClass('hide');
 
@@ -1032,8 +1054,6 @@ var Asq = {
             bodyHeight = $('body').outerHeight(),
             scrollPosition = $(window).scrollTop();
 
-        console.log(windowHeight, ' | ', bodyHeight, ' | ', scrollPosition);
-
         if ((((bodyHeight > windowHeight && (bodyHeight - (windowHeight + scrollPosition)) < 250) || typeof e == 'boolean') && ((Asq.current.offsetRow + 1) * 100) < Asq.current.totalRows)) {
             if (Asq.current.requesting > Asq.current.offsetRow) return;
 
@@ -1197,8 +1217,18 @@ var Asq = {
 
         headers.each(function(index, elm) {
             elm = $(elm);
-            elm.css('width', firstRow.eq(index).outerWidth() + 'px');
+            var toSetWidth = firstRow.eq(index).outerWidth(),
+                scrollWidth = elm[0].scrollWidth;
+
+            if (toSetWidth < scrollWidth) {
+                firstRow.eq(index).css('min-width', scrollWidth);
+            }
+            else {
+                elm.css('width', firstRow.eq(index).outerWidth() + 'px');
+            }
         });
+
+        Asq.tableHead.width(Asq.table.outerWidth() + 10);
     },
 
 
