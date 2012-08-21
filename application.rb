@@ -1,14 +1,9 @@
-require 'rubygems' if RUBY_VERSION < '1.9'
-require 'sinatra'
-require 'sinatra/sequel'
-require 'mysql2'
+require 'bundler/setup'
+Bundler.require
 require './models/init'
 require './models/queryrow'
 require './models/querytable'
-require 'json'
 require 'csv'
-require 'yaml'
-require 'htmlentities'
 
 class Application < Sinatra::Base
   set :root, File.dirname(__FILE__)
