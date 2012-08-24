@@ -1,5 +1,3 @@
-require 'bundler/setup'
-Bundler.require
 require './models/init'
 require './models/queryrow'
 require './models/querytable'
