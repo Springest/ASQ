@@ -39,3 +39,6 @@ config.yml
 Rakefile
 Gemfile.lock
 tmp/
+
+Gemfile
+Gemfile.lock

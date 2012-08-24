@@ -5,16 +5,20 @@
 postgres:
   adapter: postgres
   host: localhost
-  user: username
+  user: usernmae
   database: asq_queries
 mysql:
   adapter: mysql2
   host: localhost
-  user: root
-  password: root
+  user: username
+  password: password
   database: asq_queries
   timeout: 30
   reconnect: true
+sqlite:
+  adapter: sqlite
+  database: asq_queries
+
 login:
   user: 'root'
   pass: 'default'

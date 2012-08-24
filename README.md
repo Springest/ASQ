@@ -1,12 +1,12 @@
-ASQ: Awesome Super Queries
-==========================
+ASQ
+===
 
-Or: **AS**k with a **Q**uery.
+Dare to ASQ!
 
 What is it?
 -----------
 
-ASQ is a simple yet powerful query tool. It's self hosted, and works with MySQL. It's ideal to use for your business intelligence: run complex queries and export them to CSV (or maybe GDocs in the future). Once a query is stored, anyone in the team can run it, to see what the current results are.
+ASQ is a simple yet powerful query tool. It's self hosted, and works with MySQL 5.5+, PostgreSQL 9+ and SQLite 3+. It's ideal to use for your business intelligence: run complex queries and export them to CSV (or maybe GDocs in the future). Once a query is stored, anyone in the team can run it, to see what the current results are.
 
 License
 -------
@@ -19,9 +19,11 @@ Install
 * Install the MySQL Ruby Gem;
 * Clone repository iwth `git clone git@github.com:Springest/ASQ.git asq`;
 * Open folder with `cd asq`;
+* Create a copy of `Gemfile.EXAMPLE` and name it `Gemfile`. Uncomment the DB adapter you want to use.
 * Install bundles with `bundle install`;
-* Open `install.sql` and execute it in a MySQL DB, via for example phpmyadmin or Sequel Pro;
-* Edit `config.EXAMPLE.yml` to desired settings and save it as `config.yml`;
+* Create a database `asq_queries`;
+* Import the needed `install_YOUR_DB.sql` where `YOUR_DB` is either `mysql`, `postgresql` or `sqlite`;
+* Edit `config.EXAMPLE.yml` to desired settings (be sure to rename for example `mysql` to `database` to use MySQL) and save it as `config.yml`;
 * Edit `Rakefile.EXAMPLE` and save as `Rakefile`.
 * Run with `bundle exec shotgun`;
 * Open `http://localhost:9393` in your browser;
@@ -49,9 +51,9 @@ Arguments in queries
 [STRING:SubjectName;autosuggest=subjects.name] for an autosuggest served from table 'subject' column 'name'.
 ```
 
-* Note that for comparison with the `=` you need to wrap the column name in the `DATE(columnname)` or one of the other date functions in MySQL. <http://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html>
+* Note that for comparison with the `=` you need to wrap the column name in the `DATE(columnname)` or one of the other date functions in MySQL <http://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html>, PostgreSQL <http://www.postgresql.org/docs/8.0/static/functions-datetime.html> or SQLite <http://www.sqlite.org/lang_datefunc.html>.
 * The names of the variables can't contain spaces.
-* If you use strings in a comparison, wrap the code around quotes, otherwise MySQL does not know that it is dealing with strings.
+* If you use strings in a comparison, wrap the code around quotes, otherwise it does not know that it is dealing with strings.
 
 Contributions by
 ----------------
@@ -62,5 +64,4 @@ Thanks!
 
 TODO
 ----
-
-* Export to Google Docs;
+* Login to Google Apps and export to Google Docs;
