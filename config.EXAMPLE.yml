@@ -5,7 +5,7 @@
 postgres:
   adapter: postgres
   host: localhost
-  user: usernmae
+  user: username
   database: asq_queries
 mysql:
   adapter: mysql2
