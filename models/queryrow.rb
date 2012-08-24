@@ -99,19 +99,9 @@ class QueryRow
         }
       end
 
-      seconddb = Sequel.connect(
-        :adapter => 'mysql2',
-        :host => Config['db']['host'],
-        :user => Config['db']['user'],
-        :password => Config['db']['pass'],
-        :database => params[:db],
-        :timeout => 30,
-        :reconnect => true
-      )
-
       toReturn = []
 
-      results = seconddb[queryToExecute]
+      results = second_db(params[:db])[queryToExecute]
 
       query['totalRows'] = results.count
 
@@ -150,24 +140,19 @@ class QueryRow
   end
 
   def self.autosuggest(db, table, column, query)
-    seconddb = Sequel.connect(
-      :adapter => 'mysql2',
-      :host => Config['db']['host'],
-      :user => Config['db']['user'],
-      :password => Config['db']['pass'],
-      :database => db,
-      :timeout => 30,
-      :reconnect => true
-    )
-
     toReturn = []
 
-    results = seconddb[table.to_sym].filter(column.to_sym.ilike('%' + query + '%')).limit(14)
+    results = second_db(db)[table.to_sym].filter(column.to_sym.ilike('%' + query + '%')).limit(14)
 
     results.each do |results|
       toReturn.push(results[column.to_sym])
     end
 
     toReturn
+  end
+
+  def second_db database_name
+    config = Config['database'].merge( 'database' => database_name )
+    Sequel.connect( config )
   end
 end
