@@ -30,6 +30,7 @@ var Asq = {
         Asq.setDbList();
         Asq.setQueryList();
         Asq.setEditAjax();
+        Asq.setGraphAjax();
         Asq.setExport();
         Asq.setSyntaxHighlighting();
         Asq.setOptionsMenu();
@@ -349,6 +350,45 @@ var Asq = {
         }
     },
 
+    setGraphDialog: function(data) {
+
+    },
+
+    setGraphAjax: function() {
+        var elm = $('#graph');
+
+        elm.find('form').submit(function(e){
+            e.preventDefault();
+
+            var data = {
+                xaxis: elm.find('#graph-xaxis').val(),
+                id: Asq.current.queryId,
+                db: Asq.current.db,
+                sortColumn: Asq.current.sortColumn,
+                sortDir: Asq.current.sortDir,
+                offset: 0
+            };
+
+            for(var i = 0; i < 5; i++) {
+                data['serie' + i] = elm.find('#graph-series' + i).val();
+            }
+
+            $.ajax('/graph', {
+                type: 'POST',
+                data: data,
+                dataType: 'json',
+                success: function(response) {
+                    Asq.displayGraph(response);
+                },
+                error: function(response) {
+                    alert(response);
+                }
+            });
+
+
+            $('section').addClass('hide');
+        });
+    },
 
 
     /* Called when user wants to add or edit a query. Sets fields and syntax highlighting. */
@@ -798,10 +838,12 @@ var Asq = {
                     Asq.setArgsDialog(!hasResults, typeof data.results != 'undefined' && data.results.length == 0);
                 }
 
+                Asq.setGraphDialog();
+
                 Asq.current.name = data.query.name;
                 Asq.current.sql = data.query.query;
 
-                $('header .edit.hide,header .export.hide').removeClass('hide');
+                $('header .edit.hide,header .export.hide, header .graph.hide').removeClass('hide');
 
                 if (!hasResults) return;
 
@@ -996,7 +1038,11 @@ var Asq = {
         Asq.zebraStripe();
     },
 
-
+    displayGraph: function(data) {
+        $('table.table-head, table.table-body, .meta-results, div#graph-area').remove();
+        $('body').append('<div id="graph-area"></div>');
+        var chart = new Highcharts.Chart(data);
+    },
 
 
     formatData: function(data) {

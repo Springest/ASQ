@@ -22,6 +22,7 @@
     %a.open.icon.add{ :href => '#', 'data-ref' => 'edit' } Add
     %a.open.icon.edit.hide{ :href => '#', 'data-ref' => 'edit' } Edit
     %a.open.icon.args.hide{ :href => '#', 'data-ref' => 'args' } Args
+    %a.open.icon.graph.hide{ :href => '#', 'data-ref' => 'graph' } Graph
     %a.open.icon.export.hide{ :href => '#', 'data-ref' => 'export' } Export
 
     %input.search-in-results{ :type => 'search', :placeholder => 'Search in results' }
@@ -50,6 +51,22 @@
             %ul.args
             %p
                 %input{ :type => 'submit', :id => 'args-submit', :value => 'Request' }
+
+%section#graph.hide
+    %div
+        %h1 Graph
+        %p.error.hide Errors here
+
+        %form#graphform{ :action => '/graph', :method => 'post' }
+            %p
+                %label{ :for => 'graph-xaxis' } X Axis
+                %input#graph-xaxis{ :name => 'graph-xaxis' }
+            - 5.times do |i|
+                %p
+                    %label{ :for => "graph-series#{i}" }== Serie #{i}
+                    %input{ :name => "graph-series#{i}", :id => "graph-series#{i}" }
+            %p
+                %input{ :type => 'submit', :id => 'graph-submit', :value => 'Show' }
 
 %section#export.hide
     %div

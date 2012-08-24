@@ -58,6 +58,42 @@ class Application < Sinatra::Base
     }.to_json
   end
 
+  post '/graph' do
+      row = QueryRow.new(params[:id].to_i)
+
+      results = row.results(params, 10)
+
+      xaxis = params[:xaxis].to_sym
+      
+      toReturn = {
+          :chart => {
+              :renderTo => 'graph-area',
+              :type => 'column'
+          },
+
+          :title => {
+              :text => results[:query]['name']
+          },
+
+          :xAxis => {
+              :categories => results[:results].map{|result| result[xaxis] }
+          },
+
+          :series => [ ]
+      }
+
+      5.times do |i|
+          serie = "serie#{i}".to_sym
+
+          toReturn[:series] << {
+              :name => params[serie],
+              :data => results[:results].map{|result| result[params[serie].to_sym]}
+          } if params[serie] && !params[serie].empty?
+      end
+
+      toReturn.to_json
+    end
+
   ['/:db/:query', '/:db/:query/:order', '/:db/:query/:order/desc', '/'].each do |path|
     get path do
       @queries = QueryTable.all
