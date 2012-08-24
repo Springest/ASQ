@@ -1,8 +1,11 @@
-db:
-  user: 'root'
-  pass: 'root'
-  host: 'localhost'
-  name: 'asq_queries'
+database:
+  adapter: mysql2
+  host: localhost
+  user: root
+  password: root
+  database: asq_queries
+  timeout: 30
+  reconnect: true
 login:
   user: 'root'
   pass: 'default'

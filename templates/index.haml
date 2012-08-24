@@ -1,12 +1,12 @@
 %header
     %h1 ASQ
-    
+
     .db
         %a.icon.database{ :href => '#', 'data-ref' => 'db' } DB
         %ul
             - @dbs.each do |dba|
                 %li
-                    %a{ :href => '/' + dba[:Database], 'data-db-name' => dba[:Database] }= dba[:Database]
+                    %a{ :href => '/' + dba, 'data-db-name' => dba }= dba
 
     .queries
         %input.search-in-queries{ :type => 'search', :placeholder => sprintf('Search %d queries', @queries.count) }
@@ -79,7 +79,7 @@
         %h2 Arguments in queries
         %ul
             %li Open the add/edit a query dialog.
-            %li 
+            %li
                 On the place where you want to use an argument, insert one of the following things:
                 %code.blockcode
                     [INT:Number]<br>
