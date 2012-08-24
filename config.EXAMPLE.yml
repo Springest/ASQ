@@ -1,13 +1,6 @@
-# Change the name of the DB to `database` to use it.
-# Eg `mysql` -> `database`
-# Do not change the name of the adapter.
-# Be sure to uncomment the adapter in the Gemfile as well!
-postgres:
-  adapter: postgres
-  host: localhost
-  user: username
-  database: asq_queries
-mysql:
+# Comment out the DB adapters you don't want to use,
+# and vice versa for the one you want to use.
+database:
   adapter: mysql2
   host: localhost
   user: username
@@ -15,9 +8,14 @@ mysql:
   database: asq_queries
   timeout: 30
   reconnect: true
-sqlite:
-  adapter: sqlite
-  database: asq_queries
+#database:
+#  adapter: postgres
+#  host: localhost
+#  user: username
+#  database: asq_queries
+#database:
+#  adapter: sqlite
+#  database: asq_queries
 
 login:
   user: 'root'
