@@ -27,10 +27,10 @@ class QueryRow
     if @error
       { 'success' => false }
     elsif @id.nil?
-      @id = DB[:queries].insert(:name => @name, :query => @query)
+      @id = DB[:queries].insert(:name => @name, :query => @query, :active => 'true')
       { 'success' => @id }
     else
-      DB[:queries].where(:id => @id).update(:name => @name, :query => @query)
+      DB[:queries].where(:id => @id).update(:name => @name, :query => @query, :active => 'true')
       { 'success' => @id }
     end
   end

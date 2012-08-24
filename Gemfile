@@ -2,13 +2,18 @@ source 'http://rubygems.org'
 
 gem 'sinatra'
 gem 'net-ssh'
-gem 'haml'
-gem 'sass'
-gem 'compass'
 gem 'shotgun'
-gem 'mysql2'
 gem 'sequel'
 gem 'sinatra-sequel'
+
+
+# Frontend
+gem 'haml'
+gem 'sass'
 gem 'json'
 gem 'thin'
 gem 'htmlentities'
+
+# DB
+gem 'mysql2'
+gem 'pg'

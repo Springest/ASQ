@@ -1,19 +1,14 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    chunky_png (1.2.5)
-    compass (0.12.alpha.0)
-      chunky_png (~> 1.2)
-      fssm (>= 0.2.7)
-      sass (~> 3.1)
     daemons (1.1.6)
     eventmachine (0.12.10)
-    fssm (0.2.7)
     haml (3.1.4)
     htmlentities (4.3.1)
     json (1.6.5)
     mysql2 (0.3.11)
     net-ssh (2.5.2)
+    pg (0.14.0)
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
@@ -38,12 +33,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  compass
   haml
   htmlentities
   json
   mysql2
   net-ssh
+  pg
   sass
   sequel
   shotgun
