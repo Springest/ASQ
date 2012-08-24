@@ -56,6 +56,7 @@ Arguments in queries
 Contributions by
 ----------------
 * [Mark Mulder](https://github.com/bittersweet)
+* [Jan-Willem van der Meer](https://github.com/jewilmeer)
 
 Thanks!
 
