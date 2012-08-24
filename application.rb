@@ -9,6 +9,7 @@ class Application < Sinatra::Base
     set :haml, { :ugly => false, :attr_wrapper => '"', :format => :html5 }
     set :clean_trace, true
     set :environment, :development
+
     require_relative 'models/init'
     require_relative 'models/queryrow'
     require_relative 'models/querytable'
@@ -60,7 +61,7 @@ class Application < Sinatra::Base
   ['/:db/:query', '/:db/:query/:order', '/:db/:query/:order/desc', '/'].each do |path|
     get path do
       @queries = QueryTable.all
-      @dbs = ListDBs
+      @dbs = all_databases
       haml :index
     end
   end
@@ -92,6 +93,24 @@ class Application < Sinatra::Base
       end
 
       csv_string
+    end
+  end
+
+  helpers do
+    def all_databases
+      all_dbs = DB['SHOW DATABASES'].to_a.map{|row| row[:Database]}
+      filter_databases all_dbs
+    end
+
+    def filter_databases list
+      return list unless database_matcher
+
+      matcher = Regexp.new(database_matcher)
+      list.select{|database| matcher.match(database) }
+    end
+
+    def database_matcher
+      settings.config['misc']['dblistMatch']
     end
   end
 end
