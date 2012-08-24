@@ -1,10 +1,3 @@
-require 'bundler/setup'
-Bundler.require
-require './models/init'
-require './models/queryrow'
-require './models/querytable'
-require 'csv'
-
 class Application < Sinatra::Base
   set :root, File.dirname(__FILE__)
   set :views, settings.root + '/templates'
@@ -16,6 +9,9 @@ class Application < Sinatra::Base
     set :haml, { :ugly => false, :attr_wrapper => '"', :format => :html5 }
     set :clean_trace, true
     set :environment, :development
+    require_relative 'models/init'
+    require_relative 'models/queryrow'
+    require_relative 'models/querytable'
   end
 
   use Rack::Auth::Basic, 'Login to use ASQ.' do |username, password|
