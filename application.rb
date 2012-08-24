@@ -3,7 +3,6 @@ Bundler.require
 require './models/init'
 require './models/queryrow'
 require './models/querytable'
-require 'csv'
 
 class Application < Sinatra::Base
   set :root, File.dirname(__FILE__)
