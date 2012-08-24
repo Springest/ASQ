@@ -53,6 +53,12 @@ Arguments in queries
 * The names of the variables can't contain spaces.
 * If you use strings in a comparison, wrap the code around quotes, otherwise MySQL does not know that it is dealing with strings.
 
+Contributions by
+----------------
+* [Mark Mulder](https://github.com/bittersweet)
+
+Thanks!
+
 TODO
 ----
 
