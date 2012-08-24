@@ -1,8 +1,20 @@
-db:
-  user: 'root'
-  pass: 'root'
-  host: 'localhost'
-  name: 'asq_queries'
+# Change the name of the DB to `database` to use it.
+# Eg `mysql` -> `database`
+# Do not change the name of the adapter.
+# Be sure to uncomment the adapter in the Gemfile as well!
+postgres:
+  adapter: postgres
+  host: localhost
+  user: username
+  database: asq_queries
+mysql:
+  adapter: mysql2
+  host: localhost
+  user: root
+  password: root
+  database: asq_queries
+  timeout: 30
+  reconnect: true
 login:
   user: 'root'
   pass: 'default'
