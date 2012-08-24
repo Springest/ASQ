@@ -11,7 +11,7 @@ class Application < Sinatra::Base
     set :environment, :development
 
     require_relative 'models/init'
-    require_relative 'models/queryrow'
+    require_relative 'models/query'
     require_relative 'models/querytable'
   end
 
@@ -20,29 +20,33 @@ class Application < Sinatra::Base
   end
 
   post '/add' do
-    insertedRow = QueryRow.new(params)
-    returnValue = insertedRow.save
+    query_params = legacy_convert(params)
+    query = Query.new(query_params).save
 
-    if returnValue[:success] && !params.has_key?('ajax')
-      redirect sprintf('/#query=%s', returnValue[/[0-9]+/])
-    else
-      returnValue.to_json
-    end
+    # TODO: It would be better to return a hint which attribute is returned
+    # For now we keep the old stuff
+    # {success: {id: query.id}}.to_json
+    {success: query.id}.to_json
   end
 
   delete '/query/:id' do
-    row = QueryRow.new(params[:id].to_i)
-    row.delete.to_json
+    query = Query[params[:id]]
+    if query
+      query.delete
+      {success: query.id}.to_json
+    else
+      {error: query.id}.to_json
+    end
   end
 
   get '/query/:id' do
-    row = QueryRow.new(params[:id].to_i)
-    result = row.get.to_json
+    query = Query[params[:id]]
+    query.values.to_json
   end
 
   post '/results' do
-    row = QueryRow.new(params[:id].to_i)
-    row.results(params).to_json
+    query = Query[params[:id]]
+    query.results(params).to_json
   end
 
   get '/styles/screen.css' do
@@ -60,7 +64,7 @@ class Application < Sinatra::Base
 
   ['/:db/:query', '/:db/:query/:order', '/:db/:query/:order/desc', '/'].each do |path|
     get path do
-      @queries = QueryTable.all
+      @queries = Query.where(:active => 'true').order(:name).all
       @dbs = all_databases
       haml :index
     end
@@ -71,8 +75,8 @@ class Application < Sinatra::Base
       headers 'Content-Type' => 'text/csv',
         'Content-Disposition' => 'attachment; filename="export.csv"'
 
-      row = QueryRow.new(params[:query].to_i)
-      results = row.results(params, 1000000)
+      query = Query[params[:query]]
+      results = query.results(params, 1_000_000)
 
       csv_string = CSV.generate(:col_sep => ';') do |csv|
         titles = []
@@ -111,6 +115,14 @@ class Application < Sinatra::Base
 
     def database_matcher
       settings.config['misc']['dblistMatch']
+    end
+
+    def legacy_convert params
+      {
+        name: params['edit-name'],
+        query: params['edit-query'],
+        active: true
+      }
     end
   end
 end
