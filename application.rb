@@ -12,7 +12,6 @@ class Application < Sinatra::Base
 
     require_relative 'models/init'
     require_relative 'models/query'
-    require_relative 'models/querytable'
   end
 
   use Rack::Auth::Basic, 'Login to use ASQ.' do |username, password|
