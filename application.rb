@@ -9,6 +9,7 @@ class Application < Sinatra::Base
   set :root, File.dirname(__FILE__)
   set :views, settings.root + '/templates'
   set :public_folder, settings.root + '/public'
+  set :config, YAML::load_file("#{settings.root}/config.yml")
 
   configure do
     set :dump_errors, true
@@ -18,7 +19,7 @@ class Application < Sinatra::Base
   end
 
   use Rack::Auth::Basic, 'Login to use ASQ.' do |username, password|
-    [username, password] == [Config['login']['user'], Config['login']['pass']]
+    [username, password] == [config['login']['user'], config['login']['pass']]
   end
 
   post '/add' do
