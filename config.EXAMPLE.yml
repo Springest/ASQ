@@ -1,11 +1,20 @@
+# Comment out the DB adapters you don't want to use,
+# and vice versa for the one you want to use.
 database:
   adapter: mysql2
   host: localhost
-  user: root
-  password: root
+  user: username
+  password: password
   database: asq_queries
-  timeout: 30
-  reconnect: true
+#database:
+#  adapter: postgres
+#  host: localhost
+#  user: username
+#  database: asq_queries
+#database:
+#  adapter: sqlite
+#  database: asq_queries
+
 login:
   user: 'root'
   pass: 'default'
