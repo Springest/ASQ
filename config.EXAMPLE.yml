@@ -6,8 +6,6 @@ database:
   user: username
   password: password
   database: asq_queries
-  timeout: 30
-  reconnect: true
 #database:
 #  adapter: postgres
 #  host: localhost
