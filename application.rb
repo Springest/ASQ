@@ -98,7 +98,15 @@ class Application < Sinatra::Base
 
   helpers do
     def all_databases
-      all_dbs = DB['SHOW DATABASES'].to_a.map{|row| row[:Database]}
+      case Config['database']['adapter']
+      when 'mysql2'
+        all_dbs = DB['SHOW DATABASES'].to_a.map{|row| row[:Database]}
+      when 'postgres'
+        all_dbs = DB['SELECT datname AS database FROM pg_database'].to_a.map{|row| row[:database]}
+      when 'sqlite'
+        all_dbs = DB['PRAGMA database_list'].to_a.map{|row| row[:name]}
+      end
+
       filter_databases all_dbs
     end
 
