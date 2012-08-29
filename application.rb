@@ -41,7 +41,6 @@ class Application < Sinatra::Base
   end
 
   post '/results' do
-    raise 'ASQ: no permission to access database.' unless db_access params[:db]
     row = QueryRow.new(params[:id].to_i)
     row.results(params).to_json
   end
@@ -71,8 +70,6 @@ class Application < Sinatra::Base
     get path do
       headers 'Content-Type' => 'text/csv',
         'Content-Disposition' => 'attachment; filename="export.csv"'
-
-      raise 'ASQ: no permission to access database.' unless db_access params[:db]
 
       row = QueryRow.new(params[:query].to_i)
       results = row.results(params, 1000000)
@@ -108,8 +105,6 @@ class Application < Sinatra::Base
         all_dbs = DB['SELECT datname AS database FROM pg_database'].to_a.map{|row| row[:database]}
       when 'sqlite'
         all_dbs = DB['PRAGMA database_list'].to_a.map{|row| row[:name]}
-      else
-        raise 'ASQ: DB adapter not supported.'
       end
 
       filter_databases all_dbs
@@ -120,11 +115,6 @@ class Application < Sinatra::Base
 
       matcher = Regexp.new(database_matcher)
       list.select{|database| matcher.match(database) }
-    end
-
-    def db_access dbname
-      return true unless database_matcher
-      all_databases.include? dbname
     end
 
     def database_matcher
