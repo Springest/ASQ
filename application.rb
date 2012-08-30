@@ -28,6 +28,16 @@ class Application < Sinatra::Base
     {success: query.id}.to_json
   end
 
+  put '/edit/:id' do
+    query_params = legacy_convert(params)
+    query = Query[params[:id]].update query_params
+
+    # TODO: It would be better to return a hint which attribute is returned
+    # For now we keep the old stuff
+    # {success: {id: query.id}}.to_json
+    {success: query.id}.to_json
+  end
+
   delete '/query/:id' do
     query = Query[params[:id]]
     if query

@@ -438,8 +438,8 @@ var Asq = {
 
       $('body').addClass('loading');
 
-      $.ajax('/add', {
-        type: id != 'false' ? 'PUT' : 'POST',
+      $.ajax(editing ? ('/edit/' + id) : '/add', {
+        type: editing ? 'PUT' : 'POST',
         data: data,
         dataType: 'json',
         success: function(response) {
