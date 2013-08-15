@@ -7,12 +7,14 @@ GEM
       tilt
     htmlentities (4.3.1)
     json (1.8.0)
+    kgio (2.8.0)
     mysql2 (0.3.13)
     net-ssh (2.6.8)
     pg (0.15.1)
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
+    raindrops (0.11.0)
     sass (3.2.10)
     sequel (4.1.1)
     shotgun (0.9)
@@ -30,6 +32,10 @@ GEM
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
     tilt (1.4.1)
+    unicorn (4.6.3)
+      kgio (~> 2.6)
+      rack
+      raindrops (~> 0.7)
 
 PLATFORMS
   ruby
@@ -48,3 +54,4 @@ DEPENDENCIES
   sinatra-sequel
   sqlite3
   thin
+  unicorn

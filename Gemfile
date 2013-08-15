@@ -6,6 +6,9 @@ gem 'shotgun'
 gem 'sequel'
 gem 'sinatra-sequel'
 
+group :production do
+  gem 'unicorn'
+end
 
 # Frontend
 gem 'haml'
