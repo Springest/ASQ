@@ -10,6 +10,7 @@ GEM
     kgio (2.8.0)
     mysql2 (0.3.13)
     net-ssh (2.6.8)
+    pg (0.15.1)
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
@@ -25,6 +26,7 @@ GEM
     sinatra-sequel (0.9.0)
       sequel (>= 3.2.0)
       sinatra (>= 0.9.4)
+    sqlite3 (1.3.7)
     thin (1.5.1)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
@@ -44,10 +46,12 @@ DEPENDENCIES
   json
   mysql2
   net-ssh
+  pg
   sass
   sequel
   shotgun
   sinatra
   sinatra-sequel
+  sqlite3
   thin
   unicorn
