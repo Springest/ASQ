@@ -57,7 +57,14 @@ class Application < Sinatra::Base
 
   post '/results' do
     query = Query[params[:id]]
-    query.results(params).to_json
+    results = query.results(params)
+    if results[:success]
+      status 200
+      body results.to_json
+    else
+      status 500
+      body results[:message]
+    end
   end
 
   get '/styles/screen.css' do

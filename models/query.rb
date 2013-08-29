@@ -38,9 +38,12 @@ class Query < Sequel::Model
 
       toReturn = []
 
-      results = second_db(params[:db])[queryToExecute]
-
-      query['totalRows'] = results.count
+      begin
+        results = second_db(params[:db])[queryToExecute]
+        query['totalRows'] = results.count
+      rescue Exception => e
+        return {  :succes => false, :message => e.to_s }
+      end
 
       unless (params[:sortColumn].nil?)
         params[:sortColumn] = params[:sortColumn].split('?').first
@@ -61,12 +64,12 @@ class Query < Sequel::Model
       end
 
       if queryArgs.empty?
-        { :query => query, :results => toReturn }
+        { :success => true, :query => query, :results => toReturn }
       else
-        { :query => query, :results => toReturn, :args => queryArgs }
+        { :success => true, :query => query, :results => toReturn, :args => queryArgs }
       end
     else
-      { 'success' => false }
+      { :success => false }
     end
   end
 
