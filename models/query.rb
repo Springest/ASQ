@@ -77,8 +77,20 @@ class Query < Sequel::Model
   end
 
   def second_db database_name
-    config = Config['database'].merge( 'database' => database_name )
-    Sequel.connect( config )
+    unless Query.connection_cache.has_key? database_name
+      config = Config['database'].merge('database' => database_name)
+      Query.connection_cache[database_name] = Sequel.connect(config)
+    end
+
+    Query.connection_cache[database_name]
+  end
+
+  def self.connection_cache
+    unless Thread.current.thread_variable? :connection_cache
+      Thread.current.thread_variable_set(:connection_cache, Hash.new)
+    end
+
+    Thread.current.thread_variable_get(:connection_cache)
   end
 
   def self.autosuggest(db, table, column, query)
