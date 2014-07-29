@@ -42,7 +42,7 @@ namespace :deploy do
     puts `git tag -a #{release_name} -m 'Tagged release'`
     puts `git push --tags`
   end
-  
+
   task :push_previous do
     releases = `git tag`.split("\n").select { |t| t[0..7] == 'release-' }.sort
     current_release = releases.last
