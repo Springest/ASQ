@@ -1,6 +1,13 @@
+ENV["GOOGLE_AUTH_DOMAIN"] ||= "<your google apps domain, e.g. springest.com>"
+ENV["SESSION_SECRET"]     ||= "super secure secret"
+ENV["SECURE_KEY"]         ||= "some secure key"
 require 'yaml'
+require 'sinatra/google-auth'
 
 class Application < Sinatra::Base
+  register Sinatra::GoogleAuth
+  use Sinatra::GoogleAuth::Middleware
+
   set :root, File.dirname(__FILE__)
   set :views, settings.root + '/templates'
   set :public_folder, settings.root + '/public'
@@ -14,10 +21,6 @@ class Application < Sinatra::Base
 
     require_relative 'models/init'
     require_relative 'models/query'
-  end
-
-  use Rack::Auth::Basic, 'Login to use ASQ.' do |username, password|
-    [username, password] == [config['login']['user'], config['login']['pass']]
   end
 
   post '/add' do
