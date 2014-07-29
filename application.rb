@@ -1,12 +1,23 @@
 ENV["GOOGLE_AUTH_DOMAIN"] ||= "<your google apps domain, e.g. springest.com>"
-ENV["SESSION_SECRET"]     ||= "super secure secret"
-ENV["SECURE_KEY"]         ||= "some secure key"
+ENV["SESSION_SECRET"]     ||= "CHANGE ME!"
+ENV["OAUTH_ID"]           ||= "<your google oauth id>"
+ENV["OAUTH_SECRET"]       ||= "<your google oauth secret>"
 require 'yaml'
-require 'sinatra/google-auth'
+require 'oauth2'
+require 'omniauth-oauth2'
+require 'omniauth-google-oauth2'
 
 class Application < Sinatra::Base
-  register Sinatra::GoogleAuth
-  use Sinatra::GoogleAuth::Middleware
+  use Rack::Session::Cookie, :secret => ENV["SESSION_SECRET"]
+  use OmniAuth::Builder do
+    provider :google_oauth2, ENV["OAUTH_ID"], ENV["OAUTH_SECRET"], {
+      :scope => 'email,profile'
+    }
+  end
+
+  OmniAuth.config.on_failure = Proc.new { |env|
+    OmniAuth::FailureEndpoint.new(env).redirect_to_failure
+  }
 
   set :root, File.dirname(__FILE__)
   set :views, settings.root + '/templates'
@@ -21,6 +32,26 @@ class Application < Sinatra::Base
 
     require_relative 'models/init'
     require_relative 'models/query'
+  end
+
+  before do
+    puts ENV["OAUTH_ID"]
+    puts ENV["OAUTH_SECRET"]
+    authenticate! unless request.path == "/auth/google_oauth2/callback"
+  end
+
+  # Callback URL used when the authentication is done
+  get '/auth/google_oauth2/callback' do
+    puts "In callback"
+    auth_details = request.env['omniauth.auth']
+    puts auth_details.info
+    session[:domain] = auth_details.info['email'].split('@').last
+    session[:user_info] = auth_details.info
+    redirect '/'
+  end
+
+  get '/auth/failure' do
+    puts params[:message]
   end
 
   post '/add' do
@@ -152,6 +183,16 @@ class Application < Sinatra::Base
         query: params['edit-query'],
         active: true
       }
+    end
+  end
+
+  private
+
+  def authenticate!
+    if session[:domain] != ENV["GOOGLE_AUTH_DOMAIN"]
+      puts session[:email]
+      puts session[:domain]
+      redirect '/auth/google_oauth2'
     end
   end
 end

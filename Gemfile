@@ -5,7 +5,7 @@ gem 'net-ssh'
 gem 'shotgun'
 gem 'sequel'
 gem 'sinatra-sequel'
-gem 'sinatra-google-auth'
+gem 'omniauth-google-oauth2'
 
 group :production do
   gem 'unicorn'
