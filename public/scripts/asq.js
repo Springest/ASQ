@@ -777,6 +777,10 @@ var Asq = {
         offset: 0
       };
 
+    if (Asq.current.queryId == null) {
+      return;
+    }
+
     $.extend(data, Asq.current.args);
 
     $('body').addClass('loading loading-query');
