@@ -269,7 +269,7 @@ var Asq = {
       if (e.metaKey) return;
 
       e.preventDefault();
-      
+
       hideQueryList();
 
       listElm.find('.current').removeClass('current');
@@ -995,7 +995,7 @@ var Asq = {
     var currentAmount = Math.min((Asq.current.offsetRow + 1) * 100, Asq.current.totalRows);
 
     $('.meta-results').html('Displaying ' + currentAmount + ' out of a total of ' + Asq.current.totalRows + ' results.');
-    
+
     Asq.setHeaders();
     Asq.zebraStripe();
   },
@@ -1004,7 +1004,7 @@ var Asq = {
 
 
   formatData: function(data) {
-    if (/[0-9a-z]{40}/i.test(data) || /[0-9]{4}\-[0-9]{2}\-[0-9]{2}/.test(data)) {
+    if (/[0-9a-z]{40}/i.test(data) || /[0-9]{4}\-[0-9]{2}\-[0-9]{2}/.test(data) || /[a-z]*/i.test(data)) {
       return data;
     }
 
@@ -1018,7 +1018,7 @@ var Asq = {
       x1 = x[0];
       x2 = x.length > 1 ? ',' + x[1].substring(0, 3) : '';
       var rgx = /(\d+)(\d{3})/;
-      
+
       while (rgx.test(x1)) {
         x1 = x1.replace(rgx, '$1' + '.' + '$2');
       }
@@ -1295,7 +1295,7 @@ var Asq = {
         elm.addClass('even');
       }
       else {
-        elm.removeClass('even');   
+        elm.removeClass('even');
       }
 
       even = !even;
