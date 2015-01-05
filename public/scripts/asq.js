@@ -1004,9 +1004,14 @@ var Asq = {
 
 
   formatData: function(data) {
-    if (/[0-9a-z]{40}/i.test(data) || /[0-9]{4}\-[0-9]{2}\-[0-9]{2}/.test(data) || /[a-z]*/i.test(data)) {
+    if (/[0-9a-z]{40}/i.test(data)) //Return if string with exactly 40 characters.
       return data;
-    }
+
+    if (/[0-9]{4}\-[0-9]{2}\-[0-9]{2}/.test(data)) //Return if string is a date.
+      return data;
+
+    if (/[a-z]*/i.test(data) && !/^0\.[0-9]*E[0-9]*$/.test(data)) //Return if string but not BigDecimal (0.126E3)
+      return data;
 
     var parsedNumber = parseFloat(data, 10),
       x, x1, x2;
