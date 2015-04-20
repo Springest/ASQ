@@ -178,14 +178,7 @@ class Application < Sinatra::Base
 
   helpers do
     def all_databases
-      case Config['database']['adapter']
-      when 'mysql2'
-        all_dbs = DB['SHOW DATABASES'].to_a.map{|row| row[:Database]}
-      when 'postgres'
-        all_dbs = DB['SELECT datname AS database FROM pg_database'].to_a.map{|row| row[:database]}
-      when 'sqlite'
-        all_dbs = DB['PRAGMA database_list'].to_a.map{|row| row[:name]}
-      end
+      all_dbs = Query.databases.keys
 
       filter_databases all_dbs
     end
@@ -194,7 +187,7 @@ class Application < Sinatra::Base
       return list unless database_matcher
 
       matcher = Regexp.new(database_matcher)
-      list.select{|database| matcher.match(database) }
+      list.select{ |database| matcher.match(database) }
     end
 
     def database_matcher
