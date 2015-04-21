@@ -1,18 +1,18 @@
 {
-	"AWSEBDockerrunVersion": "1",
-	"Image": {
-		"Name": "springest/asq",
-		"Update": "true"
-	},
-	"Ports": [
-	 {
-	   "ContainerPort": "3000"
-	 }
-	],
-	"Volumes": [
-		{
-			"HostDirectory": "/home/asq",
-			"ContainerDirectory": "/home/asq"
-		}
-	]
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "springest/asq",
+    "Update": "true"
+  },
+  "Ports": [
+   {
+     "ContainerPort": "3000"
+   }
+  ],
+  "Volumes": [
+    {
+      "HostDirectory": "/var/app",
+      "ContainerDirectory": "/var/app"
+    }
+  ]
 }
