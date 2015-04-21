@@ -20,6 +20,7 @@ class Application < Sinatra::Base
     OmniAuth::FailureEndpoint.new(env).redirect_to_failure
   }
 
+  set :bind, '0.0.0.0'
   set :root, File.dirname(__FILE__)
   set :views, settings.root + '/templates'
   set :public_folder, settings.root + '/public'
