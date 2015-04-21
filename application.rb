@@ -37,9 +37,13 @@ class Application < Sinatra::Base
   end
 
   before do
-    authenticate! unless request.path == "/auth/google_oauth2/callback" || request.path =~ /\/api\//
+    authenticate! unless request.path == "/auth/google_oauth2/callback" || request.path =~ /\/api\// || request.path == '/health-check'
   end
 
+  get '/health-check' do
+    status 200
+    body "OK"
+  end
   # Callback URL used when the authentication is done
   get '/auth/google_oauth2/callback' do
     auth_details = request.env['omniauth.auth']
