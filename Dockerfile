@@ -1,6 +1,7 @@
 FROM springest/ruby:2.1.5
 
 # Environment variables:
+ENV RACK_ENV ''
 ENV GOOGLE_AUTH_DOMAIN ''
 ENV SESSION_SECRET ''
 ENV OAUTH_ID ''

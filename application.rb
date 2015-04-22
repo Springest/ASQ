@@ -30,7 +30,13 @@ class Application < Sinatra::Base
     set :dump_errors, true
     set :haml, { :ugly => false, :attr_wrapper => '"', :format => :html5 }
     set :clean_trace, true
-    set :environment, :development
+
+    environment = :development
+    if ENV['RACK_ENV'] && [:production, :staging].include?(ENV['RACK_ENV'].to_sym)
+      environment = :production
+    end
+
+    set :environment, environment
 
     require_relative 'models/init'
     require_relative 'models/query'
