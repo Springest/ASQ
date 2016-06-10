@@ -86,7 +86,7 @@ class Application < Sinatra::Base
     query = Query[api_key: params[:key]]
 
     if query.nil?
-      status 404 && return
+      status(404) && return
     end
 
     results = query.results(params)
@@ -94,7 +94,7 @@ class Application < Sinatra::Base
     if results[:success]
       status 200
     else
-      status 500
+      status(500) && return
     end
 
     body results.to_json
