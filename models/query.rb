@@ -10,7 +10,8 @@ class Query < Sequel::Model
       query = {
         'id' => @id,
         'name' => result[:name],
-        'query' => result[:query]
+        'query' => result[:query],
+        'hasApiKey' => !result[:api_key].nil?
       }
 
       queryArgs = query['query'].scan(pattern)
@@ -106,5 +107,11 @@ class Query < Sequel::Model
     end
 
     toReturn
+  end
+
+  def generate_api_key!
+    self.api_key = SecureRandom.hex(16)
+
+    save
   end
 end

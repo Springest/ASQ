@@ -39,6 +39,7 @@ GEM
     rack-protection (1.5.3)
       rack
     raindrops (0.16.0)
+    rake (11.1.2)
     sass (3.4.22)
     sequel (4.35.0)
     shotgun (0.9.1)
@@ -70,6 +71,7 @@ DEPENDENCIES
   net-ssh
   omniauth-google-oauth2
   pg
+  rake
   sass
   sequel
   shotgun

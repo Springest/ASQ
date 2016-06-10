@@ -6,6 +6,7 @@ gem 'shotgun'
 gem 'sequel'
 gem 'sinatra-sequel'
 gem 'omniauth-google-oauth2'
+gem 'rake'
 
 group :production do
   gem 'unicorn'

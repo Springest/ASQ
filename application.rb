@@ -2,6 +2,7 @@ ENV["GOOGLE_AUTH_DOMAIN"] ||= "<your google apps domain, e.g. springest.com>"
 ENV["SESSION_SECRET"]     ||= "CHANGE ME!"
 ENV["OAUTH_ID"]           ||= "<your google oauth id>"
 ENV["OAUTH_SECRET"]       ||= "<your google oauth secret>"
+
 require 'yaml'
 require 'oauth2'
 require 'omniauth-oauth2'
@@ -35,7 +36,7 @@ class Application < Sinatra::Base
   end
 
   before do
-    authenticate! unless request.path == "/auth/google_oauth2/callback"
+    authenticate! unless request.path == "/auth/google_oauth2/callback" || request.path =~ /\/api\//
   end
 
   # Callback URL used when the authentication is done
@@ -79,6 +80,26 @@ class Application < Sinatra::Base
     end
   end
 
+  get '/:db/api/:key' do
+    content_type :json
+
+    query = Query[api_key: params[:key]]
+
+    if query.nil?
+      status 404 && return
+    end
+
+    results = query.results(params)
+
+    if results[:success]
+      status 200
+    else
+      status 500
+    end
+
+    body results.to_json
+  end
+
   get '/query/:id' do
     query = Query[params[:id]]
     query.values.to_json
@@ -94,6 +115,14 @@ class Application < Sinatra::Base
       status 500
       body results[:message]
     end
+  end
+
+  post '/:db/:id/generate_api_key' do
+    query = Query[params[:id]]
+
+    query.generate_api_key!
+
+    body({ api_key: query.api_key, db: params[:db] }.to_json)
   end
 
   get '/styles/screen.css' do
