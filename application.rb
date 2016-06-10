@@ -35,23 +35,18 @@ class Application < Sinatra::Base
   end
 
   before do
-    puts ENV["OAUTH_ID"]
-    puts ENV["OAUTH_SECRET"]
     authenticate! unless request.path == "/auth/google_oauth2/callback"
   end
 
   # Callback URL used when the authentication is done
   get '/auth/google_oauth2/callback' do
-    puts "In callback"
     auth_details = request.env['omniauth.auth']
-    puts auth_details.info
     session[:domain] = auth_details.info['email'].split('@').last
     session[:user_info] = auth_details.info
     redirect '/'
   end
 
   get '/auth/failure' do
-    puts params[:message]
   end
 
   post '/add' do
@@ -190,8 +185,6 @@ class Application < Sinatra::Base
 
   def authenticate!
     if session[:domain] != ENV["GOOGLE_AUTH_DOMAIN"]
-      puts session[:email]
-      puts session[:domain]
       redirect '/auth/google_oauth2'
     end
   end

@@ -59,8 +59,8 @@ class Query < Sequel::Model
         results = results.limit(limit, params[:offset].to_i * limit)
       end
 
-      results.each do |results|
-        toReturn.push(results)
+      results.each do |res|
+        toReturn.push(res)
       end
 
       if queryArgs.empty?
@@ -79,7 +79,7 @@ class Query < Sequel::Model
     result
   end
 
-  def second_db database_name
+  def second_db(database_name)
     unless Query.connection_cache.has_key? database_name
       config = Config['database'].merge('database' => database_name)
       Query.connection_cache[database_name] = Sequel.connect(config)
