@@ -2,6 +2,7 @@ ENV["GOOGLE_AUTH_DOMAIN"] ||= "<your google apps domain, e.g. springest.com>"
 ENV["SESSION_SECRET"]     ||= "CHANGE ME!"
 ENV["OAUTH_ID"]           ||= "<your google oauth id>"
 ENV["OAUTH_SECRET"]       ||= "<your google oauth secret>"
+
 require 'yaml'
 require 'oauth2'
 require 'omniauth-oauth2'
@@ -35,23 +36,18 @@ class Application < Sinatra::Base
   end
 
   before do
-    puts ENV["OAUTH_ID"]
-    puts ENV["OAUTH_SECRET"]
-    authenticate! unless request.path == "/auth/google_oauth2/callback"
+    authenticate! unless request.path == "/auth/google_oauth2/callback" || request.path =~ /\/api\//
   end
 
   # Callback URL used when the authentication is done
   get '/auth/google_oauth2/callback' do
-    puts "In callback"
     auth_details = request.env['omniauth.auth']
-    puts auth_details.info
     session[:domain] = auth_details.info['email'].split('@').last
     session[:user_info] = auth_details.info
     redirect '/'
   end
 
   get '/auth/failure' do
-    puts params[:message]
   end
 
   post '/add' do
@@ -84,6 +80,26 @@ class Application < Sinatra::Base
     end
   end
 
+  get '/:db/api/:key' do
+    content_type :json
+
+    query = Query[api_key: params[:key]]
+
+    if query.nil?
+      status(404) && return
+    end
+
+    results = query.results(params)
+
+    if results[:success]
+      status 200
+    else
+      status(500) && return
+    end
+
+    body results.to_json
+  end
+
   get '/query/:id' do
     query = Query[params[:id]]
     query.values.to_json
@@ -99,6 +115,14 @@ class Application < Sinatra::Base
       status 500
       body results[:message]
     end
+  end
+
+  post '/:db/:id/generate_api_key' do
+    query = Query[params[:id]]
+
+    query.generate_api_key!
+
+    body({ api_key: query.api_key, db: params[:db] }.to_json)
   end
 
   get '/styles/screen.css' do
@@ -190,8 +214,6 @@ class Application < Sinatra::Base
 
   def authenticate!
     if session[:domain] != ENV["GOOGLE_AUTH_DOMAIN"]
-      puts session[:email]
-      puts session[:domain]
       redirect '/auth/google_oauth2'
     end
   end

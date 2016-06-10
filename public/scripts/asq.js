@@ -10,7 +10,8 @@ var Asq = {
     sql: null,
     offsetRow: 0,
     totalRows: 0,
-    requesting: 0
+    requesting: 0,
+    hasApiKey: false
   },
   resize: {
     elm: null,
@@ -82,7 +83,8 @@ var Asq = {
           Asq.setEditForm({
             id: Asq.current.queryId,
             name: Asq.current.name,
-            query: Asq.current.sql
+            query: Asq.current.sql,
+            hasApiKey: Asq.current.hasApiKey
           });
         }
         else {
@@ -403,17 +405,38 @@ var Asq = {
       if (Asq.editor) {
         Asq.editor.setValue(options.query);
       }
+
+      if (Asq.current.hasApiKey) {
+        elm.find('.api-key').html('<a href="#" class="generate-api-key">Regenerate API key.</a> Note: all old keys will no longer work!');
+      } else {
+        elm.find('.api-key').html('<a href="#" class="generate-api-key">Generate API key.</a>');
+      }
     }
+
+    elm.find('a.generate-api-key').click(Asq.generateApiKey);
   },
 
+  generateApiKey: function(e) {
+    e.preventDefault();
 
+    $.ajax('/' + Asq.current.db + '/' + Asq.editingId + '/generate_api_key', {
+      type: 'POST',
+      dataType: 'json',
+      success: function(response) {
+        api_link = document.location.protocol + '//' + document.location.host + '/' + response.db + '/api/' + response.api_key;
+        $('.api-key').html(api_link);
+      },
+      error: function(response) {
+        $('.api-key').html('Something went wrong');
+      }
+    })
+  },
 
   /* The query saving functions, calls the server via Ajax. */
   setEditAjax: function() {
     var elm = $('#edit');
 
     elm.find('form').submit(postAjax);
-
 
     function postAjax(e) {
       e.preventDefault();
@@ -804,6 +827,7 @@ var Asq = {
 
         Asq.current.name = data.query.name;
         Asq.current.sql = data.query.query;
+        Asq.current.hasApiKey = data.query.hasApiKey;
 
         $('header .edit.hide,header .export.hide').removeClass('hide');
 
