@@ -89,7 +89,7 @@ class Application < Sinatra::Base
       status(404) && return
     end
 
-    results = query.results(params)
+    results = query.results(params, 1_000_000)
 
     if results[:success]
       status 200
