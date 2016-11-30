@@ -1,16 +1,21 @@
-FROM ubuntu:12.04
-# python-software-properties is required for add-apt-repository.
-RUN apt-get install -y python-software-properties
-RUN add-apt-repository -y ppa:brightbox/ruby-ng-experimental
-RUN apt-get update
-RUN apt-get -y upgrade
-RUN apt-get install -y ruby2.0 ruby2.0-dev ruby2.0-doc build-essential libxml2-dev libxslt1-dev libcurl3-gnutls-dev git libstdc++6
-RUN gem install bundler -v 1.3.5
-RUN useradd asq
-RUN mkdir /home/asq
-ADD . /home/asq
-RUN apt-get install -y libmysqlclient-dev
-RUN cd /home/asq && bash -l -c 'bundle install'
-CMD su asq -c /home/asq/docker_runner.rb
+FROM ruby:2.3
+
+# Install requirements for app
+RUN apt-get update \
+  && apt-get install -y build-essential nodejs \
+    libmysqlclient-dev \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ENV APP_HOME /home/asq/
+
+RUN mkdir $APP_HOME
+
+WORKDIR $APP_HOME
+
+COPY . $APP_HOME
+
+RUN bundle install --jobs=8
 
 EXPOSE 3000
+
+CMD $APP_HOME/docker_runner.rb
