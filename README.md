@@ -17,7 +17,7 @@ Install
 -------
 
 * Install the MySQL Ruby Gem;
-* Clone repository iwth `git clone git@github.com:Springest/ASQ.git asq`;
+* Clone repository with `git clone git@github.com:Springest/ASQ.git asq`;
 * Open folder with `cd asq`;
 * Create a copy of `Gemfile.EXAMPLE` and name it `Gemfile`. Uncomment the DB adapter you want to use.
 * Install bundles with `bundle install`;
@@ -28,6 +28,25 @@ Install
 * Run with `bundle exec shotgun`;
 * Open `http://localhost:9393` in your browser;
 * Log in and query away!
+
+Setup with Docker
+-----------------
+
+* Create read-only user
+
+* Create a new database on the same database server:
+
+  - `CREATE DATABASE asq_queries WITH OWNER postgres_read_only;`
+
+* Setup `asq_queries` database:
+
+  - `psql -U <ADMIN_USER> asq_queries < install_<DB_ADAPTER>.sql`
+
+* Start Docker container with the following env vars:
+
+  - `DB_ADAPTER`, `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_DATABASE`
+  - `LOGIN_USER`, `LOGIN_PASSWORD`, `MISC_DEFAULT`, `MISC_DBLISTMATCH`
+  - `GOOGLE_AUTH_DOMAIN`, `OAUTH_ID`, `OAUTH_SECRET`, `SESSION_SECRET`
 
 Warning!
 --------
