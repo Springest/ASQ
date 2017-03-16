@@ -29,6 +29,15 @@ Install
 * Open `http://localhost:9393` in your browser;
 * Log in and query away!
 
+Running on Docker
+-----------------
+
+A docker-compose.yml is included for convenience.
+
+* `cp .env.example .env`
+* Update `.env` to fit your environment.
+* `docker-compose -f docker-compose.yml up`
+
 Warning!
 --------
 
