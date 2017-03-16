@@ -15,6 +15,13 @@ database:
 #  adapter: sqlite
 #  database: asq_queries
 
+read_databases:
+  - 'mysql2://username:password@127.0.0.1/read_database'
+#read_databases:
+#  - 'postgres://username:password@127.0.0.1/read_database'
+#read_databases:
+#  - 'sqlite://test.db'
+
 login:
   user: 'root'
   pass: 'default'

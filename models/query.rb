@@ -82,7 +82,7 @@ class Query < Sequel::Model
 
   def second_db(database_name)
     unless Query.connection_cache.has_key? database_name
-      config = Config['database'].merge('database' => database_name)
+      config = Query.databases[database_name]
       Query.connection_cache[database_name] = Sequel.connect(config)
     end
 
@@ -113,5 +113,21 @@ class Query < Sequel::Model
     self.api_key = SecureRandom.hex(16)
 
     save
+  end
+
+  def self.databases
+    databases = {}
+    Config['read_databases'].each do |database_url|
+      database_name =
+        if database_url =~ /^sqlite/
+          database_url[/\/+([^.]*)(\.db)?$/, 1]
+        else
+          database_url[/\/([^\/]*)$/, 1]
+        end
+
+      databases[database_name] = database_url
+    end
+
+    databases
   end
 end

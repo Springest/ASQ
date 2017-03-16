@@ -20,6 +20,7 @@ class Application < Sinatra::Base
     OmniAuth::FailureEndpoint.new(env).redirect_to_failure
   }
 
+  set :bind, '0.0.0.0'
   set :root, File.dirname(__FILE__)
   set :views, settings.root + '/templates'
   set :public_folder, settings.root + '/public'
@@ -29,16 +30,26 @@ class Application < Sinatra::Base
     set :dump_errors, true
     set :haml, { :ugly => false, :attr_wrapper => '"', :format => :html5 }
     set :clean_trace, true
-    set :environment, :development
+
+    environment = :development
+    if ENV['RACK_ENV'] && [:production, :staging].include?(ENV['RACK_ENV'].to_sym)
+      environment = :production
+    end
+
+    set :environment, environment
 
     require_relative 'models/init'
     require_relative 'models/query'
   end
 
   before do
-    authenticate! unless request.path == "/auth/google_oauth2/callback" || request.path =~ /\/api\//
+    authenticate! unless request.path == "/auth/google_oauth2/callback" || request.path =~ /\/api\// || request.path == '/health-check'
   end
 
+  get '/health-check' do
+    status 200
+    body "OK"
+  end
   # Callback URL used when the authentication is done
   get '/auth/google_oauth2/callback' do
     auth_details = request.env['omniauth.auth']
@@ -178,14 +189,7 @@ class Application < Sinatra::Base
 
   helpers do
     def all_databases
-      case Config['database']['adapter']
-      when 'mysql2'
-        all_dbs = DB['SHOW DATABASES'].to_a.map{|row| row[:Database]}
-      when 'postgres'
-        all_dbs = DB['SELECT datname AS database FROM pg_database'].to_a.map{|row| row[:database]}
-      when 'sqlite'
-        all_dbs = DB['PRAGMA database_list'].to_a.map{|row| row[:name]}
-      end
+      all_dbs = Query.databases.keys
 
       filter_databases all_dbs
     end
@@ -194,7 +198,7 @@ class Application < Sinatra::Base
       return list unless database_matcher
 
       matcher = Regexp.new(database_matcher)
-      list.select{|database| matcher.match(database) }
+      list.select{ |database| matcher.match(database) }
     end
 
     def database_matcher

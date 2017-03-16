@@ -38,3 +38,7 @@ Thumbs.db
 config.yml
 Rakefile
 tmp/
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
