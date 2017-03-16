@@ -17,7 +17,7 @@ Install
 -------
 
 * Install the MySQL Ruby Gem;
-* Clone repository iwth `git clone git@github.com:Springest/ASQ.git asq`;
+* Clone repository with `git clone git@github.com:Springest/ASQ.git asq`;
 * Open folder with `cd asq`;
 * Create a copy of `Gemfile.EXAMPLE` and name it `Gemfile`. Uncomment the DB adapter you want to use.
 * Install bundles with `bundle install`;
