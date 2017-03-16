@@ -1,4 +1,4 @@
-FROM springest/ruby:2.1.5
+FROM ruby:2.4.0-alpine
 
 # Environment variables:
 ENV RACK_ENV ''
@@ -16,19 +16,29 @@ ENV READ_DATABASES ''
 ENV MISC_DEFAULT false
 ENV MISC_DBLISTMATCH false
 
+RUN apk update && apk --update add postgresql-client libstdc++
+
 # Rubygems and bundler
 RUN gem update --system --no-ri --no-rdoc
 RUN gem install bundler --no-ri --no-rdoc
 
-# python-software-properties is required for add-apt-repository.
-RUN useradd asq
-RUN mkdir /home/asq
-ADD . /home/asq
-RUN chown -R asq: /home/asq
+RUN mkdir /app
 
-WORKDIR /home/asq
+ADD Gemfile /app/
+ADD Gemfile.lock /app/
 
-RUN su asq -c 'bundle install --deployment'
-CMD su asq -c /home/asq/docker_runner.rb
+WORKDIR /app
+
+RUN apk --update add --virtual build-dependencies g++ musl-dev make \
+	postgresql-dev && \
+	bundle install --deployment && \
+	apk del build-dependencies
+
+ADD . /app
+
+RUN chown -R nobody:nogroup /app
+USER nobody
+
+CMD /app/docker_runner.rb
 
 EXPOSE 3000

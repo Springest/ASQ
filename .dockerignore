@@ -1,0 +1,26 @@
+# Logs and databases #
+######################
+*.log
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# SASS Cache
+.sass-cache/
+tmp/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+
+.ruby-version
+docker-compose.yml
+
+.Gemfile.EXAMPLE
+Rakefile.EXAMPLE
+install_*.sql
+.git

@@ -1,17 +1,17 @@
 source 'http://rubygems.org'
 
-gem 'thin'
 gem 'sinatra'
 gem 'net-ssh'
 gem 'shotgun'
 gem 'sequel'
 gem 'sinatra-sequel'
-
+gem 'omniauth-google-oauth2'
+gem 'rake'
 
 # Frontend
 gem 'haml'
 gem 'sass'
-gem 'json'
+gem 'thin'
 gem 'htmlentities'
 
 # DB, uncomment which one you want.

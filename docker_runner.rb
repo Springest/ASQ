@@ -9,7 +9,7 @@ def get_env_or_fail(name)
   end
 end
 
-File.open("/home/asq/config.yml", "w") do |config|
+File.open("/app/config.yml", "w") do |config|
   config.puts "database:"
   config.puts "  adapter: #{get_env_or_fail("DB_ADAPTER")}"
   config.puts "  host: #{get_env_or_fail("DB_HOSTNAME")}"
@@ -32,5 +32,5 @@ File.open("/home/asq/config.yml", "w") do |config|
   config.puts "  dblistMatch: #{get_env_or_fail("MISC_DBLISTMATCH")}"
 end
 
-Dir.chdir("/home/asq")
+Dir.chdir("/app")
 exec("/usr/bin/env bundle exec thin start -p 3000")
