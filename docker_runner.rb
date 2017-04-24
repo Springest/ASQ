@@ -33,4 +33,4 @@ File.open("/app/config.yml", "w") do |config|
 end
 
 Dir.chdir("/app")
-exec("/usr/bin/env bundle exec thin start -p 3000")
+exec("/usr/bin/env bundle exec puma -w 2 -p 3000")
