@@ -12,7 +12,7 @@ gem 'rake'
 # Frontend
 gem 'haml'
 gem 'sass'
-gem 'thin'
+gem 'puma'
 gem 'htmlentities'
 
 gem 'rack-ssl'

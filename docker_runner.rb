@@ -17,6 +17,7 @@ File.open("/app/config.yml", "w") do |config|
   config.puts "  user: #{get_env_or_fail("DB_USERNAME")}"
   config.puts "  password: #{get_env_or_fail("DB_PASSWORD")}"
   config.puts "  database: #{get_env_or_fail("DB_NAME")}"
+  config.puts "  max_connections: 20"
 
   config.puts "read_databases:"
 
@@ -33,4 +34,4 @@ File.open("/app/config.yml", "w") do |config|
 end
 
 Dir.chdir("/app")
-exec("/usr/bin/env bundle exec thin start -p 3000")
+exec("/usr/bin/env bundle exec puma -t 16:16 -p 3000")
