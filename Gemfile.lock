@@ -36,6 +36,8 @@ GEM
     rack (1.6.5)
     rack-protection (1.5.3)
       rack
+    rack-ssl (1.4.1)
+      rack
     rake (12.0.0)
     sass (3.4.23)
     sequel (4.44.0)
@@ -64,6 +66,7 @@ DEPENDENCIES
   net-ssh
   omniauth-google-oauth2
   pg
+  rack-ssl
   rake
   sass
   sequel
