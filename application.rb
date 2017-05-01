@@ -9,17 +9,6 @@ require 'omniauth-oauth2'
 require 'omniauth-google-oauth2'
 
 class Application < Sinatra::Base
-  use Rack::Session::Cookie, :secret => ENV["SESSION_SECRET"]
-  use OmniAuth::Builder do
-    provider :google_oauth2, ENV["OAUTH_ID"], ENV["OAUTH_SECRET"], {
-      :scope => 'email,profile'
-    }
-  end
-
-  OmniAuth.config.on_failure = Proc.new { |env|
-    OmniAuth::FailureEndpoint.new(env).redirect_to_failure
-  }
-
   set :bind, '0.0.0.0'
   set :root, File.dirname(__FILE__)
   set :views, settings.root + '/templates'
@@ -41,6 +30,18 @@ class Application < Sinatra::Base
     require_relative 'models/init'
     require_relative 'models/query'
   end
+
+  use Rack::SSL, :exclude => Proc.new { environment == :development  }
+  use Rack::Session::Cookie, :secret => ENV["SESSION_SECRET"]
+  use OmniAuth::Builder do
+    provider :google_oauth2, ENV["OAUTH_ID"], ENV["OAUTH_SECRET"], {
+      :scope => 'email,profile'
+    }
+  end
+
+  OmniAuth.config.on_failure = Proc.new { |env|
+    OmniAuth::FailureEndpoint.new(env).redirect_to_failure
+  }
 
   before do
     authenticate! unless request.path == "/auth/google_oauth2/callback" || request.path =~ /\/api\// || request.path == '/health-check'
