@@ -1,4 +1,4 @@
-FROM ruby:2.3.4-alpine
+FROM ruby:2.3.5-alpine
 
 # Environment variables:
 ENV RACK_ENV ''
