@@ -56,7 +56,7 @@ class Application < Sinatra::Base
     auth_details = request.env['omniauth.auth']
     session[:domain] = auth_details.info['email'].split('@').last
     session[:user_info] = auth_details.info
-    redirect '/'
+    redirect session[:login_referrer] || '/'
   end
 
   get '/auth/failure' do
@@ -219,6 +219,7 @@ class Application < Sinatra::Base
 
   def authenticate!
     if session[:domain] != ENV["GOOGLE_AUTH_DOMAIN"]
+      session[:login_referrer] = request.url
       redirect '/auth/google_oauth2'
     end
   end
