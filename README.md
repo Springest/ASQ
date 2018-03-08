@@ -24,9 +24,8 @@ Install
 * Create a database `asq_queries`;
 * Import the needed `install_YOUR_DB.sql` where `YOUR_DB` is either `mysql`, `postgresql` or `sqlite`;
 * Edit `config.EXAMPLE.yml` to desired settings (be sure to rename for example `mysql` to `database` to use MySQL) and save it as `config.yml`;
-* Edit `Rakefile.EXAMPLE` and save as `Rakefile`.
-* Run with `bundle exec shotgun`;
-* Open `http://localhost:9393` in your browser;
+* Run with `bundle exec rackup`;
+* Open `http://localhost:9292` in your browser;
 * Log in and query away!
 
 Running on Docker

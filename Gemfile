@@ -1,21 +1,16 @@
 source 'https://rubygems.org'
 
-gem 'sinatra'
-gem 'net-ssh'
-gem 'shotgun'
-gem 'sequel'
-gem 'bacon'
-gem 'sinatra-sequel'
+gem 'puma'
 gem 'omniauth-google-oauth2'
-gem 'rake'
+gem 'sequel'
+gem 'sinatra'
+gem 'sinatra-sequel'
+gem 'rack-ssl'
 
 # Frontend
 gem 'haml'
 gem 'sass'
-gem 'puma'
 gem 'htmlentities'
-
-gem 'rack-ssl'
 
 # DB, uncomment which one you want.
 # Also add config to the `config.yml` for the specified adapter.
