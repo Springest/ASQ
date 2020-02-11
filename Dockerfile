@@ -1,4 +1,4 @@
-FROM ruby:2.3.5-alpine
+FROM ruby:2.6-alpine
 
 # Environment variables:
 ENV RACK_ENV ''
@@ -16,11 +16,11 @@ ENV READ_DATABASES ''
 ENV MISC_DEFAULT false
 ENV MISC_DBLISTMATCH false
 
-RUN apk update && apk --update add postgresql-client libstdc++
+RUN apk --update add postgresql-client libstdc++
 
 # Rubygems and bundler
-RUN gem update --system --no-ri --no-rdoc
-RUN gem install bundler --no-ri --no-rdoc
+RUN gem update --system --no-document
+RUN gem install bundler --no-document
 
 RUN mkdir /app
 
@@ -30,9 +30,10 @@ ADD Gemfile.lock /app/
 WORKDIR /app
 
 RUN apk --update add --virtual build-dependencies g++ musl-dev make \
-	postgresql-dev && \
-	bundle install --deployment && \
-	apk del build-dependencies
+  postgresql-dev && \
+  bundle config set deployment 'true' && \
+  bundle install && \
+  apk del build-dependencies
 
 ADD . /app
 

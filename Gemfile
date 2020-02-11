@@ -9,7 +9,7 @@ gem 'rack-ssl'
 
 # Frontend
 gem 'haml'
-gem 'sass'
+gem 'sassc'
 gem 'htmlentities'
 
 # DB, uncomment which one you want.
